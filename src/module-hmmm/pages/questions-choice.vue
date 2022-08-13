@@ -191,10 +191,11 @@
 
 <script>
 import dayjs from "dayjs";
+import { list } from "@/api/hmmm/questions";
 import { citys, provinces } from "@/api/hmmm/citys.js";
-import { list, remove, disabled } from "@/api/hmmm/companys";
+import {  remove, disabled } from "@/api/hmmm/companys";
 export default {
-  name: "companys",
+  name: "questionsChoice",
   data() {
     return {
       // 表格数组
@@ -226,12 +227,12 @@ export default {
 
   created() {
     this.getCityData();
-    this.getCompanysList();
+    this.getQuestionList();
   },
 
   methods: {
     // 获取所有企业列表数据
-    async getCompanysList(obj) {
+    async getQuestionList(obj) {
       this.tableLoading = true;
       const { data } = await list(obj);
       this.tableData = data;
@@ -257,7 +258,7 @@ export default {
     },
     // 搜索按钮
     async onSave() {
-      this.getCompanysList(this.formData);
+      this.getQuestionList(this.formData);
     },
     // 清除按钮
     onClear() {
@@ -274,12 +275,12 @@ export default {
     // 点击分页
     async currentChange(num) {
       this.page.page = num;
-      this.getCompanysList(this.page);
+      this.getQuestionList(this.page);
     },
     // 切换分页数量
     handleSizeChange(val) {
       this.page.pagesize = val;
-      this.getCompanysList(this.page);
+      this.getQuestionList(this.page);
     },
     // 修改
     editBtn(row) {
@@ -301,7 +302,7 @@ export default {
         // 禁用请求
         await disabled(row);
         // 重新获取列表
-        this.getCompanysList();
+        this.getQuestionList();
         this.$message({
           type: "success",
           message: `${{ 0: "禁用", 1: "启用" }[row.state]}成功!`,
@@ -318,7 +319,7 @@ export default {
         // 删除请求
         await remove(row);
         // 重新获取列表
-        this.getCompanysList();
+        this.getQuestionList();
         this.$message({
           type: "success",
           message: "删除成功!",

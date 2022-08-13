@@ -13,6 +13,7 @@
                 type="success"
                 size="small"
                 icon="el-icon-edit"
+                @click="$router.push('/questions/new')"
               >
                 新增试题
               </el-button>
@@ -22,17 +23,15 @@
               <div class="grid-content bg-purple">
                 <span>学科：</span>
                 <el-select
-                  v-model="formData.province"
+                  v-model="subJectData.subjectID"
                   placeholder="请选择"
-                  @keyup.enter="handleFilter"
-                  @change="handleProvince"
-                  filterable
+                  @change="clickSubject"
                 >
                   <el-option
-                    v-for="item in citySelect.province"
-                    :key="item"
-                    :label="item"
-                    :value="item"
+                    v-for="item in subjectList"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
                   ></el-option>
                 </el-select>
               </div>
@@ -40,18 +39,12 @@
             <el-col :span="6">
               <div class="grid-content bg-purple">
                 <span>二级目录：</span>
-                <el-select
-                  v-model="formData.province"
-                  placeholder="请选择"
-                  @keyup.enter="handleFilter"
-                  @change="handleProvince"
-                  filterable
-                >
+                <el-select v-model="subJectData.catalogID" placeholder="请选择">
                   <el-option
-                    v-for="item in citySelect.province"
-                    :key="item"
-                    :label="item"
-                    :value="item"
+                    v-for="item in directoryList"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
                   ></el-option>
                 </el-select>
               </div>
@@ -59,18 +52,12 @@
             <el-col :span="6">
               <div class="grid-content bg-purple">
                 <span>标签：</span>
-                <el-select
-                  v-model="formData.province"
-                  placeholder="请选择"
-                  @keyup.enter="handleFilter"
-                  @change="handleProvince"
-                  filterable
-                >
+                <el-select v-model="subJectData.tags" placeholder="请选择">
                   <el-option
-                    v-for="item in citySelect.province"
-                    :key="item"
-                    :label="item"
-                    :value="item"
+                    v-for="item in tagList"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
                   ></el-option>
                 </el-select>
               </div>
@@ -79,7 +66,7 @@
               <div class="grid-content bg-purple">
                 <span>关键字：</span>
                 <el-input
-                  v-model="keywords"
+                  v-model="subJectData.keyword"
                   placeholder="请输入内容"
                 ></el-input>
               </div>
@@ -89,17 +76,17 @@
               <div class="grid-content bg-purple">
                 <span>试题类型：</span>
                 <el-select
-                  v-model="formData.province"
+                  v-model="formData.questionType"
                   placeholder="请选择"
                   @keyup.enter="handleFilter"
                   @change="handleProvince"
                   filterable
                 >
                   <el-option
-                    v-for="item in citySelect.province"
-                    :key="item"
-                    :label="item"
-                    :value="item"
+                    v-for="item in questionType"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
                   ></el-option>
                 </el-select></div
             ></el-col>
@@ -107,18 +94,12 @@
             <el-col :span="6">
               <div class="grid-content bg-purple">
                 <span>难度：</span>
-                <el-select
-                  v-model="formData.province"
-                  placeholder="请选择"
-                  @keyup.enter="handleFilter"
-                  @change="handleProvince"
-                  filterable
-                >
+                <el-select v-model="formData.difficulty" placeholder="请选择">
                   <el-option
-                    v-for="item in citySelect.province"
-                    :key="item"
-                    :label="item"
-                    :value="item"
+                    v-for="item in difficulty"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
                   ></el-option>
                 </el-select></div
             ></el-col>
@@ -126,15 +107,9 @@
             <el-col :span="6">
               <div class="grid-content bg-purple">
                 <span>方向：</span>
-                <el-select
-                  v-model="formData.province"
-                  placeholder="请选择"
-                  @keyup.enter="handleFilter"
-                  @change="handleProvince"
-                  filterable
-                >
+                <el-select v-model="formData.direction" placeholder="请选择">
                   <el-option
-                    v-for="item in citySelect.province"
+                    v-for="item in direction"
                     :key="item"
                     :label="item"
                     :value="item"
@@ -146,17 +121,17 @@
               <div class="grid-content bg-purple">
                 <span>录入人：</span>
                 <el-select
-                  v-model="formData.province"
+                  v-model="formData.user"
                   placeholder="请选择"
                   @keyup.enter="handleFilter"
                   @change="handleProvince"
                   filterable
                 >
                   <el-option
-                    v-for="item in citySelect.province"
-                    :key="item"
-                    :label="item"
-                    :value="item"
+                    v-for="item in userList"
+                    :key="item.id"
+                    :label="item.username"
+                    :value="item.id"
                   ></el-option>
                 </el-select></div
             ></el-col>
@@ -166,7 +141,7 @@
               <div class="grid-content bg-purple">
                 <span>题目备注：</span>
                 <el-input
-                  v-model="keywords"
+                  v-model="formData.remark"
                   placeholder="请输入内容"
                 ></el-input></div
             ></el-col>
@@ -175,7 +150,7 @@
               <div class="grid-content bg-purple">
                 <span>企业简称：</span>
                 <el-input
-                  v-model="keywords"
+                  v-model="formData.shortName"
                   placeholder="请输入内容"
                 ></el-input></div
             ></el-col>
@@ -234,27 +209,31 @@
           style="width: 100%"
           v-loading="tableLoading"
         >
-          <el-table-column prop="id" label="序号" width="180">
+          <el-table-column prop="number" label="试题编号" width="180">
           </el-table-column>
-          <el-table-column prop="number" label="企业编号" width="180">
+          <el-table-column prop="subject" label="学科" width="180">
           </el-table-column>
-          <el-table-column prop="shortName" label="企业简称"> </el-table-column>
-          <el-table-column prop="tags" label="标签"> </el-table-column>
-          <el-table-column prop="creatorID" label="创建者"> </el-table-column>
+          <el-table-column prop="catalog" label="目录"> </el-table-column>
+          <el-table-column
+            prop="questionType"
+            label="题型"
+            :formatter="typeFormatter"
+          >
+          </el-table-column>
+          <el-table-column prop="tags" label="题干"> </el-table-column>
           <el-table-column
             prop="addDate"
-            label="创建日期"
+            label="录入时间"
             :formatter="timeFormatter"
           >
           </el-table-column>
-          <el-table-column prop="remarks" label="备注"> </el-table-column>
           <el-table-column
-            prop="state"
-            label="状态"
-            align=""
-            :formatter="stateFormatter"
+            prop="difficulty"
+            label="难度"
+            :formatter="diffFormatter"
           >
           </el-table-column>
+          <el-table-column prop="creator" label="录入人"> </el-table-column>
           <el-table-column label="操作">
             <template slot-scope="{ row }">
               <el-button
@@ -326,13 +305,26 @@
 
 <script>
 import dayjs from "dayjs";
+import { simple } from "@/api/hmmm/subjects";
+import { list } from "@/api/hmmm/questions";
+import { simple as directorySimple } from "@/api/hmmm/directorys";
+import { simple as tagSimple } from "@/api/hmmm/tags";
+import { simple as userSimple } from "@/api/base/users";
 import { citys, provinces } from "@/api/hmmm/citys.js";
-import { list, remove, disabled } from "@/api/hmmm/companys";
+// 引入映射数据文件
+import { questionType, difficulty, direction } from "@/api/hmmm/constants";
+// ---------------------------------------
+import { remove, disabled } from "@/api/hmmm/companys";
 export default {
   name: "questions",
   data() {
     return {
-      keywords: "",
+      subjectList: [], //科目列表
+      tagList: [], //目录列表
+      userList: [], //人员列表
+      questionType,
+      difficulty,
+      direction,
       // 表格数组
       tableList: [],
       tableData: {},
@@ -345,34 +337,65 @@ export default {
       formData: {
         page: 1,
         pagesize: 10,
-        tags: "",
-        province: "",
-        city: "",
+        questionType: "",
+        difficulty: "",
+        direction: "",
+        user: "",
+        remark: "",
         shortName: "",
-        state: "",
       },
+      // 学科对象
+      subJectData: {
+        subjectID: "",
+        tags: "",
+        catalogID: "",
+        keyword: "",
+        page: 1,
+        pagesize: 5,
+      },
+      directoryList: [],
       tableLoading: false,
       page: {
         page: 1,
-        pagesize: 10,
+        pagesize: 5,
       },
     };
   },
   components: {},
 
   created() {
+    this.getSubjectList();
     this.getCityData();
-    this.getCompanysList();
+    this.getQuestionList(this.page);
+    this.getUserList();
   },
 
   methods: {
-    // 获取所有企业列表数据
-    async getCompanysList(obj) {
+    // 获取学科简单列表
+    async getSubjectList() {
+      const { data } = await simple();
+      this.subjectList = data;
+    },
+    // 获取所有题库列表数据
+    async getQuestionList(obj) {
       this.tableLoading = true;
       const { data } = await list(obj);
       this.tableData = data;
+      console.log(data);
       this.tableList = data.items;
       this.tableLoading = false;
+    },
+    // 选择完科目以后获取二级目录列表
+    async clickSubject() {
+      const { data } = await directorySimple(this.subJectData);
+      // 目录列表赋值
+      this.directoryList = data;
+      // 获取标签的列表
+      const res = await tagSimple(this.subJectData);
+      this.tagList = res.data;
+      this.subJectData.tags = res.data[0] ? res.data[0].value : "";
+      // 判断若返回的数据有二级目录则渲染第一项--否则返回空
+      this.subJectData.catalogID = data[0] ? data[0].value : "";
     },
     // 获取城市下拉列表数据
     getCityData() {
@@ -387,39 +410,56 @@ export default {
     timeFormatter(a, b, val) {
       return dayjs(val).format("YYYY-MM-DD");
     },
-    // 格式化状态
-    stateFormatter(a, b, val) {
-      return { 0: "禁用", 1: "启用" }[val];
+    // 格式化题型
+    typeFormatter(a, b, val) {
+      return { 1: "单选", 2: "多选", 3: "简答" }[val];
+    },
+    // 格式化难度
+    diffFormatter(a, b, val) {
+      return { 1: "简单", 2: "一般", 3: "困难" }[val];
     },
     // 搜索按钮
     async onSave() {
-      this.getCompanysList(this.formData);
+      this.getQuestionList(this.subJectData);
+    },
+    // 获取录入人数据
+    async getUserList() {
+      const { data } = await userSimple();
+      this.userList = data;
     },
     // 清除按钮
     onClear() {
       this.formData = {
         page: 1,
         pagesize: 10,
-        tags: "",
-        province: "",
-        city: "",
+        questionType: "",
+        difficulty: "",
+        direction: "",
+        user: "",
+        remark: "",
         shortName: "",
-        state: "",
+      };
+      this.subJectData = {
+        subjectID: "",
+        tags: "",
+        catalogID: "",
+        keyword: "",
+        page: 1,
+        pagesize: 5,
       };
     },
     // 点击分页
     async currentChange(num) {
-      this.page.page = num;
-      this.getCompanysList(this.page);
+      this.subJectData.page = num;
+      this.getQuestionList(this.subJectData);
     },
     // 切换分页数量
     handleSizeChange(val) {
-      this.page.pagesize = val;
-      this.getCompanysList(this.page);
+      this.subJectData.pagesize = val;
+      this.getQuestionList(this.subJectData);
     },
     // 修改
     editBtn(row) {
-      console.log(row);
       this.addVisible = true;
       this.$refs.addCompany.editUpdate(row);
     },
@@ -437,7 +477,7 @@ export default {
         // 禁用请求
         await disabled(row);
         // 重新获取列表
-        this.getCompanysList();
+        this.getQuestionList();
         this.$message({
           type: "success",
           message: `${{ 0: "禁用", 1: "启用" }[row.state]}成功!`,
@@ -454,7 +494,7 @@ export default {
         // 删除请求
         await remove(row);
         // 重新获取列表
-        this.getCompanysList();
+        this.getQuestionList();
         this.$message({
           type: "success",
           message: "删除成功!",
