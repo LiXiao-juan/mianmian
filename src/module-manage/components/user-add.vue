@@ -121,7 +121,7 @@ export default {
       this.$refs.dataForm.validate();
       if (this.visiabledia) {
         if (this.formBase.id) {
-          update(data).then(() => {
+          update(this.formBase).then(() => {
             this.$emit("newDataes", this.formBase);
           });
         } else {
