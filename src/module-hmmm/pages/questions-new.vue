@@ -1,9 +1,9 @@
 <template>
-  <div class='container'>试题录入(jxy)</div>
+  <div class="container">试题录入(jxy)</div>
 </template>
 
 <script>
-export default {}
+export default {};
 </script>
 
-<style scoped lang='less'></style>
+<style scoped lang="less"></style>
