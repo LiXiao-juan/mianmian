@@ -289,8 +289,8 @@
         <div class="page-change">
           <el-pagination
             background
-            :page-sizes="[10, 20, 30, 50]"
-            :page-size="formData.pagesize"
+            :page-sizes="[5, 10, 20, 30]"
+            :page-size="subJectData.pagesize"
             layout="prev, pager, next,sizes,jumper"
             :total="tableData.counts"
             @current-change="currentChange"
@@ -313,8 +313,6 @@ import { simple as userSimple } from "@/api/base/users";
 import { citys, provinces } from "@/api/hmmm/citys.js";
 // 引入映射数据文件
 import { questionType, difficulty, direction } from "@/api/hmmm/constants";
-// ---------------------------------------
-import { remove, disabled } from "@/api/hmmm/companys";
 export default {
   name: "questions",
   data() {
@@ -460,46 +458,12 @@ export default {
     },
     // 修改
     editBtn(row) {
-      this.addVisible = true;
-      this.$refs.addCompany.editUpdate(row);
     },
     // 禁用按钮
     closeBtn(row) {
-      this.$confirm(
-        `已成功${{ 1: "禁用", 0: "启用" }[row.state]}, 是否继续?`,
-        "提示",
-        {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning",
-        }
-      ).then(async () => {
-        // 禁用请求
-        await disabled(row);
-        // 重新获取列表
-        this.getQuestionList();
-        this.$message({
-          type: "success",
-          message: `${{ 0: "禁用", 1: "启用" }[row.state]}成功!`,
-        });
-      });
     },
     // 删除按钮
     delBtn(row) {
-      this.$confirm("此操作将永久删除用户 , 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
-      }).then(async () => {
-        // 删除请求
-        await remove(row);
-        // 重新获取列表
-        this.getQuestionList();
-        this.$message({
-          type: "success",
-          message: "删除成功!",
-        });
-      });
     },
   },
 };
