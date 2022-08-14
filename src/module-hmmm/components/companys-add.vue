@@ -127,6 +127,7 @@ export default {
     // 弹层隐藏
     onClose() {
       this.$emit("update:visible", false);
+      this.formBase.city = ''
       this.$refs.dataForm.resetFields();
       this.formBase.isFamous = false;
     },

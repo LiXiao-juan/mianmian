@@ -234,14 +234,28 @@
           >
           </el-table-column>
           <el-table-column prop="creator" label="录入人"> </el-table-column>
-          <el-table-column label="操作">
+          <el-table-column label="操作" width="200">
             <template slot-scope="{ row }">
               <el-button
                 plain
                 type="primary"
+                icon="el-icon-view"
+                circle
+                @click="editBtn(row)"
+              ></el-button>
+              <el-button
+                plain
+                type="success"
                 icon="el-icon-edit"
                 circle
                 @click="editBtn(row)"
+              ></el-button>
+              <el-button
+                plain
+                type="danger"
+                icon="el-icon-delete"
+                circle
+                @click="delBtn(row)"
               ></el-button>
               <!-- 禁用 -->
               <el-tooltip
@@ -269,19 +283,12 @@
               >
                 <el-button
                   plain
-                  type="success"
+                  type="warning"
                   icon="el-icon-check"
                   circle
                   @click="closeBtn(row)"
                 ></el-button>
               </el-tooltip>
-              <el-button
-                plain
-                type="danger"
-                icon="el-icon-delete"
-                circle
-                @click="delBtn(row)"
-              ></el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -366,6 +373,7 @@ export default {
     this.getCityData();
     this.getQuestionList(this.page);
     this.getUserList();
+    this.$notify.success("author to 李佳琪");
   },
 
   methods: {
@@ -457,14 +465,11 @@ export default {
       this.getQuestionList(this.subJectData);
     },
     // 修改
-    editBtn(row) {
-    },
+    editBtn(row) {},
     // 禁用按钮
-    closeBtn(row) {
-    },
+    closeBtn(row) {},
     // 删除按钮
-    delBtn(row) {
-    },
+    delBtn(row) {},
   },
 };
 </script>

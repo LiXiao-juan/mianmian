@@ -234,54 +234,68 @@
           >
           </el-table-column>
           <el-table-column prop="creator" label="录入人"> </el-table-column>
-          <el-table-column label="操作">
+          <el-table-column label="操作" width="200">
             <template slot-scope="{ row }">
-              <el-button
-                plain
-                type="primary"
-                icon="el-icon-edit"
-                circle
-                @click="editBtn(row)"
-              ></el-button>
-              <!-- 禁用 -->
+              <!-- 预览 -->
               <el-tooltip
-                v-if="row.state === 1"
                 class="item"
-                effect="dark"
-                content="禁用"
+                effect="light"
+                content="预览"
                 placement="top"
               >
                 <el-button
                   plain
-                  type="warning"
-                  icon="el-icon-close"
+                  type="primary"
+                  icon="el-icon-view"
                   circle
-                  @click="closeBtn(row)"
+                  @click="editBtn(row)"
                 ></el-button>
               </el-tooltip>
-              <!-- 开启 -->
+              <!-- 修改 -->
               <el-tooltip
-                v-else
                 class="item"
-                effect="dark"
-                content="开启"
+                effect="light"
+                content="修改"
                 placement="top"
               >
                 <el-button
                   plain
                   type="success"
-                  icon="el-icon-check"
+                  icon="el-icon-edit"
                   circle
-                  @click="closeBtn(row)"
+                  @click="editBtn(row)"
                 ></el-button>
               </el-tooltip>
-              <el-button
-                plain
-                type="danger"
-                icon="el-icon-delete"
-                circle
-                @click="delBtn(row)"
-              ></el-button>
+              <!-- 删除 -->
+              <el-tooltip
+                class="item"
+                effect="light"
+                content="删除"
+                placement="top"
+              >
+                <el-button
+                  plain
+                  type="danger"
+                  icon="el-icon-delete"
+                  circle
+                  @click="delBtn(row)"
+                ></el-button>
+              </el-tooltip>
+              <!-- 加入精选 -->
+              <el-tooltip
+                class="item"
+                effect="light"
+                content="加入精选"
+                placement="top"
+              >
+                <el-button
+                  plain
+                  type="warning"
+                  icon="el-icon-check"
+                  circle
+                  @click="collectBtn(row)"
+                ></el-button>
+              </el-tooltip>
             </template>
           </el-table-column>
         </el-table>
@@ -306,7 +320,7 @@
 <script>
 import dayjs from "dayjs";
 import { simple } from "@/api/hmmm/subjects";
-import { list } from "@/api/hmmm/questions";
+import { list, remove } from "@/api/hmmm/questions";
 import { simple as directorySimple } from "@/api/hmmm/directorys";
 import { simple as tagSimple } from "@/api/hmmm/tags";
 import { simple as userSimple } from "@/api/base/users";
@@ -366,6 +380,7 @@ export default {
     this.getCityData();
     this.getQuestionList(this.page);
     this.getUserList();
+    this.$notify.success("author to 李佳琪");
   },
 
   methods: {
@@ -448,23 +463,38 @@ export default {
     },
     // 点击分页
     async currentChange(num) {
-      this.subJectData.page = num;
-      this.getQuestionList(this.subJectData);
+      this.page.page = num;
+      this.getQuestionList(this.page);
     },
     // 切换分页数量
     handleSizeChange(val) {
-      this.subJectData.pagesize = val;
-      this.getQuestionList(this.subJectData);
+      this.page.pagesize = val;
+      this.getQuestionList(this.page);
     },
     // 修改
-    editBtn(row) {
-    },
+    editBtn(row) {},
     // 禁用按钮
-    closeBtn(row) {
-    },
+    closeBtn(row) {},
     // 删除按钮
     delBtn(row) {
+      this.$confirm("此操作将永久删除该题目 , 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(async () => {
+        // 删除请求
+        await remove(row);
+        // 重新获取列表
+        this.getQuestionList();
+        this.$message({
+          type: "success",
+          message: "删除成功!",
+        });
+      });
     },
+    collectBtn(row){
+      
+    }
   },
 };
 </script>
