@@ -216,11 +216,11 @@ export default {
       formData: {
         page: 1,
         pagesize: 10,
-        tags: "",
-        province: "",
-        city: "",
-        shortName: "",
-        state: "",
+        tags: null,
+        province: null,
+        city: null,
+        shortName: null,
+        state: null,
       },
       tableLoading: false,
       addVisible: false, //新增弹框
@@ -275,22 +275,22 @@ export default {
       this.formData = {
         page: 1,
         pagesize: 10,
-        tags: "",
-        province: "",
-        city: "",
-        shortName: "",
-        state: "",
+        tags: null,
+        province: null,
+        city: null,
+        shortName: null,
+        state: null,
       };
     },
     // 点击分页
     async currentChange(num) {
-      this.page.page = num;
-      this.getCompanysList(this.page);
+      this.formData.page = num;
+      this.getCompanysList(this.formData);
     },
     // 切换分页数量
     handleSizeChange(val) {
-      this.page.pagesize = val;
-      this.getCompanysList(this.page);
+      this.formData.pagesize = val;
+      this.getCompanysList(this.formData);
     },
     // 修改
     editBtn(row) {

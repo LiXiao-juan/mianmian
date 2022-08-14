@@ -358,10 +358,10 @@ export default {
       },
       // 学科对象
       subJectData: {
-        subjectID: "",
-        tags: "",
-        catalogID: "",
-        keyword: "",
+        subjectID: null,
+        tags: null,
+        catalogID: null,
+        keyword: null,
         page: 1,
         pagesize: 5,
       },
@@ -453,23 +453,24 @@ export default {
         shortName: "",
       };
       this.subJectData = {
-        subjectID: "",
-        tags: "",
-        catalogID: "",
-        keyword: "",
+        subjectID: null,
+        tags: null,
+        catalogID: null,
+        keyword: null,
         page: 1,
         pagesize: 5,
       };
+      this.getQuestionList(this.page);
     },
     // 点击分页
     async currentChange(num) {
-      this.page.page = num;
-      this.getQuestionList(this.page);
+      this.subJectData.page = num;
+      this.getQuestionList(this.subJectData);
     },
     // 切换分页数量
     handleSizeChange(val) {
-      this.page.pagesize = val;
-      this.getQuestionList(this.page);
+      this.subJectData.pagesize = val;
+      this.getQuestionList(this.subJectData);
     },
     // 修改
     editBtn(row) {},
@@ -492,9 +493,7 @@ export default {
         });
       });
     },
-    collectBtn(row){
-      
-    }
+    collectBtn(row) {},
   },
 };
 </script>

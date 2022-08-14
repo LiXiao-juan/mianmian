@@ -373,7 +373,7 @@ export default {
     this.getCityData();
     this.getQuestionList(this.page);
     this.getUserList();
-    this.$notify.success("author to 李佳琪");
+    this.$notify.success("author to 耿瑞杰");
   },
 
   methods: {
