@@ -45,7 +45,11 @@
           </el-table-column>
           <el-table-column prop="questionIDs" label="题目编号" width="220">
             <template slot-scope="{ row }">
-              <div v-for="item in row.questionIDs" :key="item.number">
+              <div
+                v-for="item in row.questionIDs"
+                :key="item.number"
+                @click="showDialog(item.id)"
+              >
                 <a href="#" style="color: rgb(0, 153, 255)">{{
                   item.number
                 }}</a>
@@ -78,6 +82,7 @@
           @pager="getRandomsList"
         />
       </el-card>
+      <TopicPreview ref="dialog" :detailList="detailList" />
     </div>
   </div>
 </template>
@@ -85,12 +90,14 @@
 <script>
 import TotalData from "../components/jxyComponents/TotalData.vue";
 import Pagination from "../components/jxyComponents/Pagination.vue";
-import { randoms, removeRandoms } from "@/api/hmmm/questions";
+import TopicPreview from "../components/jxyComponents/TopicPreview.vue";
+import { randoms, removeRandoms, detail } from "@/api/hmmm/questions";
 import { questionType } from "@/api/hmmm/constants";
 export default {
   components: {
     TotalData,
     Pagination,
+    TopicPreview,
   },
   created() {
     this.getRandomsList();
@@ -103,9 +110,11 @@ export default {
         keyword: "",
       }, //请求参数
       tableData: [], //表格数据
+      detailList: [], //预览详情
     };
   },
   methods: {
+    /* 获取题目列表 */
     async getRandomsList() {
       try {
         const res = await randoms(this.params);
@@ -115,12 +124,14 @@ export default {
         console.log(error);
       }
     },
+    /* 格式化题型 */
     questionType(row, column, cellValue, index) {
       const obj = questionType.find((item) => {
         return item.value == cellValue;
       });
       return obj ? obj.label : "未知";
     },
+    /* 删除题组 */
     async handleDelete(index, row) {
       try {
         await this.$confirm("此操作将永久删除该题组, 是否继续?", "提示", {
@@ -133,6 +144,16 @@ export default {
         this.$message.success("删除成功");
       } catch (error) {
         console.log(error);
+      }
+    },
+    async showDialog(id) {
+      try {
+        const res = await detail({ id });
+        this.detailList = res.data;
+        console.log(this.detailList);
+      } catch (error) {
+      } finally {
+        this.$refs.dialog.dialogVisible = true;
       }
     },
   },
