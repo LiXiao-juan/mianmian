@@ -81,7 +81,7 @@
             <el-button
               type="success"
               size="small"
-              @click="addVisible = true"
+              @click="addShow"
               icon="el-icon-edit"
             >
               新增用户
@@ -266,6 +266,10 @@ export default {
     stateFormatter(a, b, val) {
       return { 0: "禁用", 1: "启用" }[val];
     },
+    addShow() {
+      this.addVisible = true;
+      this.$refs.addCompany.editUpdate({});
+    },
     // 搜索按钮
     async onSave() {
       this.getCompanysList(this.formData);
@@ -294,7 +298,7 @@ export default {
     },
     // 修改
     editBtn(row) {
-      console.log(row);
+      row.isFamous = !!row.isFamous
       this.addVisible = true;
       this.$refs.addCompany.editUpdate(row);
     },
