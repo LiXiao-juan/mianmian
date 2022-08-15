@@ -13,12 +13,9 @@
           <el-input v-model="formBase.title"></el-input>
         </el-form-item>
         <el-form-item label="文章内容：">
-          <quill-editor
-            ref="text"
-            v-model="content"
-            class="editor"
-            :options="editorOption"
-          />
+          <!-- 富文本编辑器 -->
+
+
         </el-form-item>
         <el-form-item label="视频地址：">
           <el-input v-model="formBase.title"></el-input>
@@ -49,8 +46,6 @@ export default {
       formBase: {
         title: "",
       },
-      content: "",
-      editorOption: {},
     };
   },
   created() {},

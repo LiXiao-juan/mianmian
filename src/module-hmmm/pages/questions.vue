@@ -406,8 +406,11 @@ export default {
       const res = await tagSimple(this.subJectData);
       this.tagList = res.data;
       this.subJectData.tags = res.data[0] ? res.data[0].value : "";
+      console.log(res.data);
       // 判断若返回的数据有二级目录则渲染第一项--否则返回空
       this.subJectData.catalogID = data[0] ? data[0].value : "";
+      console.log(data);
+
     },
     // 获取城市下拉列表数据
     getCityData() {
