@@ -119,7 +119,6 @@ export default {
       try {
         const res = await randoms(this.params);
         this.tableData = res.data;
-        console.log(this.tableData);
       } catch (error) {
         console.log(error);
       }
@@ -150,7 +149,6 @@ export default {
       try {
         const res = await detail({ id });
         this.detailList = res.data;
-        console.log(this.detailList);
       } catch (error) {
       } finally {
         this.$refs.dialog.dialogVisible = true;
