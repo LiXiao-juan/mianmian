@@ -248,7 +248,7 @@
                   type="primary"
                   icon="el-icon-view"
                   circle
-                  @click="editBtn(row)"
+                  @click="preview(row)"
                 ></el-button>
               </el-tooltip>
               <!-- 修改 -->
@@ -320,7 +320,7 @@
 <script>
 import dayjs from "dayjs";
 import { simple } from "@/api/hmmm/subjects";
-import { list, remove } from "@/api/hmmm/questions";
+import { list, remove, choiceAdd } from "@/api/hmmm/questions";
 import { simple as directorySimple } from "@/api/hmmm/directorys";
 import { simple as tagSimple } from "@/api/hmmm/tags";
 import { simple as userSimple } from "@/api/base/users";
@@ -358,10 +358,10 @@ export default {
       },
       // 学科对象
       subJectData: {
-        subjectID: "",
-        tags: "",
-        catalogID: "",
-        keyword: "",
+        subjectID: null,
+        tags: null,
+        catalogID: null,
+        keyword: null,
         page: 1,
         pagesize: 5,
       },
@@ -394,7 +394,6 @@ export default {
       this.tableLoading = true;
       const { data } = await list(obj);
       this.tableData = data;
-      console.log(data);
       this.tableList = data.items;
       this.tableLoading = false;
     },
@@ -407,8 +406,11 @@ export default {
       const res = await tagSimple(this.subJectData);
       this.tagList = res.data;
       this.subJectData.tags = res.data[0] ? res.data[0].value : "";
+      console.log(res.data);
       // 判断若返回的数据有二级目录则渲染第一项--否则返回空
       this.subJectData.catalogID = data[0] ? data[0].value : "";
+      console.log(data);
+
     },
     // 获取城市下拉列表数据
     getCityData() {
@@ -453,26 +455,29 @@ export default {
         shortName: "",
       };
       this.subJectData = {
-        subjectID: "",
-        tags: "",
-        catalogID: "",
-        keyword: "",
+        subjectID: null,
+        tags: null,
+        catalogID: null,
+        keyword: null,
         page: 1,
         pagesize: 5,
       };
+      this.getQuestionList(this.page);
     },
     // 点击分页
     async currentChange(num) {
-      this.page.page = num;
-      this.getQuestionList(this.page);
+      this.subJectData.page = num;
+      this.getQuestionList(this.subJectData);
     },
     // 切换分页数量
     handleSizeChange(val) {
-      this.page.pagesize = val;
-      this.getQuestionList(this.page);
+      this.subJectData.pagesize = val;
+      this.getQuestionList(this.subJectData);
     },
     // 修改
-    editBtn(row) {},
+    preview(row) {
+      console.log(row);
+    },
     // 禁用按钮
     closeBtn(row) {},
     // 删除按钮
@@ -482,8 +487,11 @@ export default {
         cancelButtonText: "取消",
         type: "warning",
       }).then(async () => {
-        // 删除请求
-        await remove(row);
+        // 请求
+        await choiceAdd({
+          id: row.id,
+          choiceState: 0,
+        });
         // 重新获取列表
         this.getQuestionList();
         this.$message({
@@ -492,9 +500,27 @@ export default {
         });
       });
     },
-    collectBtn(row){
-      
-    }
+    // 加入精选--------bug1判断条件
+    collectBtn(row) {
+      console.log(row);
+      this.$confirm("此操作将该题目加入精选, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(async () => {
+        // 请求
+        await choiceAdd({
+          id: row.id,
+          choiceState: 1,
+        });
+        // 重新获取列表
+        this.getQuestionList();
+        this.$message({
+          type: "success",
+          message: "收藏成功!",
+        });
+      });
+    },
   },
 };
 </script>
@@ -504,9 +530,11 @@ export default {
   padding: 15px;
   .el-col {
     margin-bottom: 10px;
+    height: 36px;
     .grid-content {
       display: flex;
       align-items: center;
+      // height: 36px;
       span {
         font-size: 14px;
         color: #606266;
@@ -514,6 +542,8 @@ export default {
         width: 110px;
         text-align: right;
         background-color: #fff;
+        // overflow: hidden;
+        // height: 36px;
       }
     }
   }
@@ -536,5 +566,8 @@ export default {
 }
 .move-col-right {
   margin-right: 20px;
+}
+.box-card {
+  // min-width: 800px;
 }
 </style>
