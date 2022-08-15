@@ -2,14 +2,14 @@
   <div class="app-container">
     <el-card shadow="always">
       <!-- 头部搜索框跟警告 -->
-      <Permissions>
+      <Permissions @searchSuccess="Search" @clear="getPermissions">
         <template #right>
           <el-button type="success" icon="el-icon-edit" size="small"
             >新增权限组</el-button
           >
         </template>
         <template #left-tag>
-          <span>共条记录</span>
+          <span>共{{ total }}条记录</span>
         </template>
       </Permissions>
       <!-- 表格主体 -->
@@ -23,10 +23,16 @@
         <el-table-column type="selection" width="200px"> </el-table-column>
         <el-table-column prop="title" label="用户名" width="400px">
         </el-table-column>
-        <el-table-column prop="create_date" label="日期" width="600px">
+        <el-table-column
+          prop="create_date"
+          label="日期"
+          width="600px"
+          sortable
+          :formatter="taskTime"
+        >
         </el-table-column>
         <el-table-column label="操作" show-overflow-tooltip>
-          <template>
+          <template slot-scope="{ row }">
             <el-button
               type="primary"
               icon="el-icon-edit"
@@ -38,16 +44,17 @@
               icon="el-icon-delete"
               circle
               plain
+              @click="deletePermissions(row)"
             ></el-button>
           </template>
         </el-table-column>
       </el-table>
       <!-- 分页 -->
-      <!-- <PageTool
-        :total="counts"
+      <PageTool
+        :total="total"
         @pageChange="pageChange"
         @pageSizeChange="pageSizeChange"
-      ></PageTool> -->
+      ></PageTool>
 
       <!-- 新增编辑弹框 -->
     </el-card>
@@ -55,7 +62,8 @@
 </template>
 
 <script>
-import { list } from "@/api/base/permissions.js";
+import dayjs from "dayjs";
+import { list, remove } from "@/api/base/permissions.js";
 import PageTool from "@/module-manage/components/page-tool.vue";
 import Permissions from "@/module-manage/components/permissions-header";
 export default {
@@ -66,6 +74,7 @@ export default {
         page: 1,
         pagesize: 10,
       },
+      total: 0,
     };
   },
   components: {
@@ -83,9 +92,45 @@ export default {
       const res = await list(this.params);
       console.log(res);
       this.PermissionsData = res.data.list;
+      this.total = res.data.counts;
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;
+    },
+    // 格式化时间
+    taskTime(row, column, index) {
+      return dayjs(index).format("YYYY-MM-DD HH:mm:ss");
+    },
+    //搜索
+    Search(val) {
+      this.PermissionsData = val;
+    },
+    // 删除
+    async deletePermissions(row) {
+      try {
+        this.$confirm("此操作将永久删除该用户, 是否继续?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        });
+        console.log(row);
+        await remove(row);
+        this.$message({
+          message: "恭喜你，删除成功",
+          type: "success",
+        });
+        this.getPermissions();
+      } catch (error) {}
+    },
+    // 点击分页
+    pageChange(pageNum) {
+      this.params.page = pageNum;
+      this.getPermissions(this.params);
+    },
+    // 切换分页数量
+    pageSizeChange(pageSize) {
+      this.params.pagesize = pageSize;
+      this.getPermissions(this.params);
     },
   },
 };

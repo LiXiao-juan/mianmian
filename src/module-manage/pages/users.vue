@@ -2,7 +2,7 @@
   <div class="app-container">
     <el-card shadow="always">
       <!-- 头部搜索框跟警告 -->
-      <UserHeader>
+      <UserHeader @searchSuccess="Search" @clear="getUserList">
         <template #right>
           <el-button
             type="success"
@@ -36,6 +36,7 @@
               @click="EditUser(row)"
             ></el-button>
             <el-button
+              v-if="!(row.id === 2)"
               type="danger"
               icon="el-icon-delete"
               circle
@@ -67,7 +68,8 @@
 import UserAdd from "@/module-manage/components/user-add.vue";
 import UserHeader from "@/module-manage/components/user-header.vue";
 import PageTool from "@/module-manage/components/page-tool.vue";
-import { list, remove, simple } from "@/api/base/users.js";
+import { list, remove } from "@/api/base/users.js";
+import { simple } from "@/api/base/permissions.js";
 export default {
   data() {
     return {
@@ -99,23 +101,31 @@ export default {
       // 加载
       this.loading = true;
       const res = await list(this.params);
-      // console.log(res);
+      console.log(res);
       this.tableData = res.data.list;
       this.counts = res.data.counts;
       this.loading = false;
     },
-    pageChange() {},
-    pageSizeChange() {},
+    // 点击分页
+    pageChange(pageNum) {
+      this.params.page = pageNum;
+      this.getUserList(this.params);
+    },
+    // 切换分页数量
+    pageSizeChange(pageSize) {
+      this.params.pagesize = pageSize;
+      this.getUserList(this.params);
+    },
     // 删除用户
     async deleteUser(row) {
       try {
-        await this.$confirm("此操作将永久删除该用户, 是否继续?", "提示", {
+        this.$confirm("此操作将永久删除该用户, 是否继续?", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning",
         });
         console.log(row);
-        await remove(row.id);
+        await remove(row);
         this.$message({
           message: "恭喜你，删除成功",
           type: "success",
@@ -124,15 +134,26 @@ export default {
       } catch (error) {}
     },
     // 编辑用户
-    EditUser(row) {
+    async EditUser(row) {
       this.logVisible = true;
       this.dialogFormVisible = true;
-      this.$refs.useradd.getUpdat(row);
+      const res = await simple();
+      // console.log(res);
+      this.PermissionGroupsList = res.data;
+      // console.log(res.data);
+      this.$refs.useradd.getUpdat(row, this.PermissionGroupsList);
     },
     //创建用户
-    AddUser() {
+    async AddUser() {
       this.dialogFormVisible = true;
       this.logVisible = false;
+      const res = await simple();
+      this.PermissionGroupsList = res.data;
+      this.$refs.useradd.getAdd(this.PermissionGroupsList);
+    },
+    //搜索
+    Search(val) {
+      this.tableData = val;
     },
   },
 };

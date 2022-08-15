@@ -15,13 +15,13 @@
         <el-form-item :label="$t('table.email')" prop="email">
           <el-input v-model="formBase.email"></el-input>
         </el-form-item>
-        <el-form-item
+        <!-- <el-form-item
           :label="$t('table.paddword')"
           prop="password"
           v-if="formBase.password != undefined"
         >
           <el-input v-model="formBase.password"></el-input>
-        </el-form-item>
+        </el-form-item> -->
 
         <!-- 角色 -->
         <el-form-item :label="$t('table.role')" prop="role">
@@ -33,12 +33,12 @@
           prop="permission_group_id"
         >
           <el-select class="filter-item" v-model="formBase.permission_group_id">
-            <!-- <el-option
+            <el-option
               v-for="item in PermissionGroupsList"
               :value="item.id"
-              :key="item.key"
+              :key="item.id"
               :label="item.title"
-            ></el-option> -->
+            ></el-option>
           </el-select>
         </el-form-item>
 
@@ -79,19 +79,21 @@ export default {
     visiabledia: {
       type: Boolean,
     },
+    // PermissionGroupsList: {
+    //   type: Array,
+    // },
   },
   data() {
     return {
       formBase: {
-        id: "",
         username: "",
         email: "",
-        password: "",
         role: "",
-        permission_group_id: "",
+        permission_group_id: 0,
         phone: "",
         introduction: "",
       },
+      PermissionGroupsList: [],
       ruleInline: {
         username: [
           { required: true, message: "用户名不能为空", trigger: "blur" },
@@ -115,12 +117,13 @@ export default {
       return this.visiabledia ? "编辑用户" : "创建用户";
     },
   },
+  created() {},
   methods: {
     // 表单提交
     createData() {
-      this.$refs.dataForm.validate();
-      if (this.visiabledia) {
-        if (this.formBase.id) {
+      try {
+        this.$refs.dataForm.validate();
+        if (this.visiabledia) {
           update(this.formBase).then(() => {
             this.$emit("newDataes", this.formBase);
           });
@@ -129,9 +132,8 @@ export default {
             this.$emit("newDataes", this.formBase);
           });
         }
-      } else {
-        this.$Message.error("*号为必填项!");
-      }
+        this.onClose();
+      } catch (error) {}
     },
     // 关闭弹层
     onClose() {
@@ -139,9 +141,15 @@ export default {
       this.formBase = "";
     },
     //编辑数据回显
-    async getUpdat(val) {
+    async getUpdat(val, PermissionGroupsList) {
       console.log(val);
       this.formBase = val;
+      this.PermissionGroupsList = PermissionGroupsList;
+    },
+    // 创建时获取下拉框数据
+    async getAdd(PermissionGroupsList) {
+      this.formBase.permission_group_id = "";
+      this.PermissionGroupsList = PermissionGroupsList;
     },
   },
   // 挂载结束

@@ -3,7 +3,7 @@
     <el-row type="flex">
       <el-col>
         <el-input
-          v-model="input"
+          v-model="form.username"
           placeholder="根据用户名搜索"
           size="small"
         ></el-input>
@@ -32,16 +32,21 @@
 </template>
 
 <script>
-// import { list } from "@/api/base/users.js";
+import { list } from "@/api/base/users.js";
 export default {
   name: "UserHeader",
   data() {
     return {
-      input: "",
+      form: {
+        page: 1,
+        pagesize: 10,
+        username: "",
+      },
       params: {
         page: 1,
         pagesize: 10,
       },
+      SearchList: [],
     };
   },
   props: {
@@ -56,16 +61,15 @@ export default {
   methods: {
     // 清空输入框
     clearAble() {
-      this.input = "";
+      this.form.username = "";
+      this.$emit("clear")
     },
     // 搜索用户
     async searchUser() {
-      // const res = await list(
-      //   this.params.page,
-      //   this.params.pagesize,
-      //   this.input
-      // );
-      // console.log(res);
+      const res = await list(this.form);
+      console.log(res);
+      this.SearchList = res.data.list;
+      this.$emit("searchSuccess", this.SearchList);
     },
   },
 };
