@@ -198,6 +198,15 @@
             </el-col>
           </el-row>
         </div>
+        <!-- tabs选择栏 -->
+        <template>
+          <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
+            <el-tab-pane label="全部" name="first"></el-tab-pane>
+            <el-tab-pane label="待审核" name="second"></el-tab-pane>
+            <el-tab-pane label="已审核" name="third"></el-tab-pane>
+            <el-tab-pane label="已拒绝" name="fourth"></el-tab-pane>
+          </el-tabs>
+        </template>
         <!-- 提示栏 -->
         <Lalert style="margin-bottom: 15px"
           >共{{ tableData.counts }}条数据</Lalert
@@ -209,86 +218,64 @@
           style="width: 100%"
           v-loading="tableLoading"
         >
-          <el-table-column prop="number" label="试题编号" width="180">
+          <el-table-column prop="number" label="试题编号" width="120">
           </el-table-column>
-          <el-table-column prop="subject" label="学科" width="180">
+          <el-table-column prop="subject" label="学科" width="120">
           </el-table-column>
-          <el-table-column prop="catalog" label="目录"> </el-table-column>
+          <el-table-column prop="catalog" label="目录" width="120">
+          </el-table-column>
           <el-table-column
             prop="questionType"
             label="题型"
             :formatter="typeFormatter"
+            width="120"
           >
           </el-table-column>
-          <el-table-column prop="tags" label="题干"> </el-table-column>
+          <el-table-column prop="tags" label="题干" width="280">
+          </el-table-column>
           <el-table-column
             prop="addDate"
             label="录入时间"
             :formatter="timeFormatter"
+            width="180"
           >
           </el-table-column>
           <el-table-column
             prop="difficulty"
             label="难度"
             :formatter="diffFormatter"
+            width="80"
           >
           </el-table-column>
-          <el-table-column prop="creator" label="录入人"> </el-table-column>
-          <el-table-column label="操作" width="200">
+          <el-table-column prop="creator" label="录入人" width="120">
+          </el-table-column>
+          <el-table-column
+            prop="chkState"
+            label="审核状态"
+            width="120"
+            :formatter="chkStateFormatter"
+          >
+          </el-table-column>
+          <el-table-column prop="chkRemarks" label="审核意见" width="150">
+          </el-table-column>
+          <el-table-column prop="chkUser" label="审核人" width="120">
+          </el-table-column>
+          <el-table-column
+            prop="publishState"
+            label="发布状态"
+            width="150"
+            :formatter="StateFormatter"
+          >
+          </el-table-column>
+          <el-table-column fixed="right" label="操作" width="200">
             <template slot-scope="{ row }">
-              <el-button
-                plain
-                type="primary"
-                icon="el-icon-view"
-                circle
-                @click="editBtn(row)"
-              ></el-button>
-              <el-button
-                plain
-                type="success"
-                icon="el-icon-edit"
-                circle
-                @click="editBtn(row)"
-              ></el-button>
-              <el-button
-                plain
-                type="danger"
-                icon="el-icon-delete"
-                circle
-                @click="delBtn(row)"
-              ></el-button>
-              <!-- 禁用 -->
-              <el-tooltip
-                v-if="row.state === 1"
-                class="item"
-                effect="dark"
-                content="禁用"
-                placement="top"
+              <el-button type="text" size="small">预览</el-button>
+              <el-button type="text" size="small">审核</el-button>
+              <el-button type="text" size="small">修改</el-button>
+              <el-button type="text" size="small">上架</el-button>
+              <el-button type="text" size="small" @click="onDelete(row)"
+                >删除</el-button
               >
-                <el-button
-                  plain
-                  type="warning"
-                  icon="el-icon-close"
-                  circle
-                  @click="closeBtn(row)"
-                ></el-button>
-              </el-tooltip>
-              <!-- 开启 -->
-              <el-tooltip
-                v-else
-                class="item"
-                effect="dark"
-                content="开启"
-                placement="top"
-              >
-                <el-button
-                  plain
-                  type="warning"
-                  icon="el-icon-check"
-                  circle
-                  @click="closeBtn(row)"
-                ></el-button>
-              </el-tooltip>
             </template>
           </el-table-column>
         </el-table>
@@ -312,18 +299,19 @@
 
 <script>
 import dayjs from "dayjs";
-import { simple } from "@/api/hmmm/subjects";
-import { list } from "@/api/hmmm/questions";
-import { simple as directorySimple } from "@/api/hmmm/directorys";
-import { simple as tagSimple } from "@/api/hmmm/tags";
-import { simple as userSimple } from "@/api/base/users";
-import { citys, provinces } from "@/api/hmmm/citys.js";
+import { simple } from "@/api/hmmm/subjects"; //学科
+import { choice, remove } from "@/api/hmmm/questions"; //精选题库列表等
+import { simple as directorySimple } from "@/api/hmmm/directorys"; //二级目录
+import { simple as tagSimple } from "@/api/hmmm/tags"; //标签
+import { simple as userSimple } from "@/api/base/users"; //录入人
+import { citys, provinces } from "@/api/hmmm/citys.js"; //城市
 // 引入映射数据文件
-import { questionType, difficulty, direction } from "@/api/hmmm/constants";
+import { questionType, difficulty, direction } from "@/api/hmmm/constants"; //试题类型，难度，方向
 export default {
   name: "questions",
   data() {
     return {
+      activeName: "first", //tabs高亮
       subjectList: [], //科目列表
       tagList: [], //目录列表
       userList: [], //人员列表
@@ -351,10 +339,10 @@ export default {
       },
       // 学科对象
       subJectData: {
-        subjectID: "",
-        tags: "",
-        catalogID: "",
-        keyword: "",
+        subjectID: null,
+        tags: null,
+        catalogID: null,
+        keyword: null,
         page: 1,
         pagesize: 5,
       },
@@ -385,10 +373,11 @@ export default {
     // 获取所有题库列表数据
     async getQuestionList(obj) {
       this.tableLoading = true;
-      const { data } = await list(obj);
+      const { data } = await choice(obj);
       this.tableData = data;
-      console.log(data);
+      // console.log(data);
       this.tableList = data.items;
+      console.log(data.items);
       this.tableLoading = false;
     },
     // 选择完科目以后获取二级目录列表
@@ -413,16 +402,24 @@ export default {
       this.formData.city = this.citySelect.cityDate[0];
     },
     // 格式化时间
-    timeFormatter(a, b, val) {
-      return dayjs(val).format("YYYY-MM-DD");
+    timeFormatter(row, column, val) {
+      return dayjs(val).format("YYYY-MM-DD HH:mm:ss");
     },
     // 格式化题型
-    typeFormatter(a, b, val) {
+    typeFormatter(row, column, val) {
       return { 1: "单选", 2: "多选", 3: "简答" }[val];
     },
     // 格式化难度
-    diffFormatter(a, b, val) {
+    diffFormatter(row, column, val) {
       return { 1: "简单", 2: "一般", 3: "困难" }[val];
+    },
+    // 格式化审核状态
+    chkStateFormatter(row, column, val) {
+      return { 0: "待审核", 1: "通过", 2: "拒绝" }[val];
+    },
+    // 发布状态
+    StateFormatter(row, column, val) {
+      return { 0: "下架", 1: "上架" }[val];
     },
     // 搜索按钮
     async onSave() {
@@ -464,17 +461,15 @@ export default {
       this.subJectData.pagesize = val;
       this.getQuestionList(this.subJectData);
     },
-    // 修改
-    editBtn(row) {},
-    // 禁用按钮
-    closeBtn(row) {},
-    // 删除按钮
-    delBtn(row) {},
+    //tabs点击事件
+    handleClick() {},
+    //删除
+    onDelete(row) {},
   },
 };
 </script>
 
-<style scoped lang="less">
+<style scoped lang="scss">
 .companys {
   padding: 15px;
   .el-col {
