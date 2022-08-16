@@ -127,6 +127,7 @@ export default {
     // 弹层隐藏
     onClose() {
       this.$emit("update:visible", false);
+      this.formBase.city = ''
       this.$refs.dataForm.resetFields();
       this.formBase.isFamous = false;
     },
@@ -145,6 +146,11 @@ export default {
       // 判断是新增还是编辑--若有id 则是编辑
       if (this.formBase.id) {
         // 若没有则是新增数据
+       await update(this.formBase)
+       this.$emit("update:visible", false);
+          // 调用获取列表的方法，更新视图
+          this.$emit("upData");
+       this.$message.success('修改成功')
       } else {
         try {
           // 发起新增的请求
@@ -178,6 +184,7 @@ export default {
     },
     // 修改调用更新表单对象重现数据
     editUpdate(rowInfo){
+      console.log(rowInfo);
       this.formBase = rowInfo
     }
   },
