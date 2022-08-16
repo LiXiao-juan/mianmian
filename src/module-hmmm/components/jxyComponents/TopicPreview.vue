@@ -2,7 +2,6 @@
   <el-dialog
     title="题目预览"
     :visible.sync="dialogVisible"
-    width="900px"
     :before-close="onClose"
   >
     <el-row>
@@ -97,7 +96,6 @@ export default {
 
   methods: {
     onClose() {
-      console.log(1);
       this.dialogVisible = false;
     },
   },
