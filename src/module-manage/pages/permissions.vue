@@ -4,7 +4,11 @@
       <!-- 头部搜索框跟警告 -->
       <Permissions @searchSuccess="Search" @clear="getPermissions">
         <template #right>
-          <el-button type="success" icon="el-icon-edit" size="small"
+          <el-button
+            type="success"
+            icon="el-icon-edit"
+            size="small"
+            @click="dialogFormVisible = true"
             >新增权限组</el-button
           >
         </template>
@@ -38,6 +42,7 @@
               icon="el-icon-edit"
               circle
               plain
+              @click="updatePermission(row)"
             ></el-button>
             <el-button
               type="danger"
@@ -57,22 +62,43 @@
       ></PageTool>
 
       <!-- 新增编辑弹框 -->
+      <PermissionsAdd
+        :text="text"
+        :pageTitle="pageTitle"
+        :ruleInline="ruleInline"
+        :formBase="formBase"
+        :dialogFormVisible="dialogFormVisible"
+        @handleCloseModal="handleCloseModal"
+        @newDataes="getPermissions"
+      ></PermissionsAdd>
     </el-card>
   </div>
 </template>
 
 <script>
 import dayjs from "dayjs";
-import { list, remove } from "@/api/base/permissions.js";
+import { list, remove, detail } from "@/api/base/permissions.js";
 import PageTool from "@/module-manage/components/page-tool.vue";
 import Permissions from "@/module-manage/components/permissions-header";
+import PermissionsAdd from "@/module-manage/components/permissions-add.vue";
 export default {
   data() {
     return {
+      loading: false,
+      dialogFormVisible: false,
+      text: "创建",
+      pageTitle: "权限组",
       PermissionsData: [],
+      ruleInline: {},
       params: {
         page: 1,
         pagesize: 10,
+      },
+      formBase: {
+        id: 0,
+        create_date: "",
+        title: "",
+        permissions: [],
       },
       total: 0,
     };
@@ -80,6 +106,7 @@ export default {
   components: {
     PageTool,
     Permissions,
+    PermissionsAdd,
   },
 
   created() {
@@ -131,6 +158,23 @@ export default {
     pageSizeChange(pageSize) {
       this.params.pagesize = pageSize;
       this.getPermissions(this.params);
+    },
+    // 修改
+    async updatePermission(row) {
+      this.text = "编辑";
+      const { data } = await detail(row);
+      this.formBase = data;
+      this.dialogFormVisible = true;
+    },
+    // 关闭弹层
+    handleCloseModal() {
+      this.dialogFormVisible = false;
+      this.formBase = {
+        id: 0,
+        create_date: "",
+        title: "",
+        permissions: [],
+      };
     },
   },
 };

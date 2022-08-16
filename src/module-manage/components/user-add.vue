@@ -8,6 +8,7 @@
         label-position="left"
         label-width="120px"
         style="width: 400px; margin-left: 120px"
+        v-loading="loading"
       >
         <el-form-item :label="$t('table.username')" prop="username">
           <el-input v-model="formBase.username"></el-input>
@@ -15,13 +16,13 @@
         <el-form-item :label="$t('table.email')" prop="email">
           <el-input v-model="formBase.email"></el-input>
         </el-form-item>
-        <!-- <el-form-item
+        <el-form-item
           :label="$t('table.paddword')"
           prop="password"
           v-if="formBase.password != undefined"
         >
           <el-input v-model="formBase.password"></el-input>
-        </el-form-item> -->
+        </el-form-item>
 
         <!-- 角色 -->
         <el-form-item :label="$t('table.role')" prop="role">
@@ -85,9 +86,12 @@ export default {
   },
   data() {
     return {
+      loading: false,
       formBase: {
+        avatar: null,
         username: "",
         email: "",
+        password: "",
         role: "",
         permission_group_id: 0,
         phone: "",
@@ -116,22 +120,51 @@ export default {
     dialogTitle() {
       return this.visiabledia ? "编辑用户" : "创建用户";
     },
+    uploadData() {
+      let {
+        avatar,
+        email,
+        id,
+        introduction,
+        permission_group_id,
+        phone,
+        role,
+        username,
+      } = this.formBase;
+      const obj = {
+        avatar,
+        email,
+        id,
+        introduction,
+        permission_group_id,
+        phone,
+        role,
+        username,
+      };
+      return obj;
+    },
   },
   created() {},
   methods: {
     // 表单提交
-    createData() {
+    async createData() {
+      this.loading = true;
       try {
         this.$refs.dataForm.validate();
         if (this.visiabledia) {
-          update(this.formBase).then(() => {
-            this.$emit("newDataes", this.formBase);
+          await update(this.uploadData).then(() => {
+            this.$message.success("编辑用户成功");
+            this.$emit("newDataes", this.uploadData);
           });
         } else {
-          add(this.formBase).then(() => {
+          this.formBase.sex = 1;
+          this.formBase.avatar = "";
+          await add(this.formBase).then(() => {
+            this.$message.success("添加用户成功");
             this.$emit("newDataes", this.formBase);
           });
         }
+        this.loading = false;
         this.onClose();
       } catch (error) {}
     },
