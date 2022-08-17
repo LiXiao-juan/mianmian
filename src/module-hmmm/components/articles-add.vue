@@ -102,26 +102,6 @@ export default {
       this.$refs.dataForm.resetFields();
       this.formBase.videoURL = "";
     },
-    onEditor() {
-      console.log("富文本内容=", this.$refs.text.value);
-    },
-    // 失去焦点事件
-    onEditorBlur(quill) {
-      console.log("editor blur!", quill);
-    },
-    // // 获得焦点事件
-    // onEditorFocus(quill) {
-    //   console.log("editor focus!", quill);
-    // },
-    // // 准备富文本编辑器
-    // onEditorReady(quill) {
-    //   console.log("editor ready!", quill);
-    // },
-    // 内容改变事件
-    onEditorChange({ quill, html, text }) {
-      console.log("editor change!", quill, html, text);
-      this.content = html;
-    },
     //确认新增
     async onSave() {
       await this.$refs.dataForm.validate();

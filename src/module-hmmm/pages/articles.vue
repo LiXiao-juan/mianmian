@@ -118,10 +118,14 @@
       </el-card>
     </div>
     <!-- 新增弹框 -->
-    <addArticles :visible.sync="addVisible" :formData="addData"></addArticles>
+    <addArticles
+      :visible.sync="addVisible"
+      :formData="addData"
+      ref="addDialog"
+    ></addArticles>
     <!-- 预览弹框 -->
     <PreviewArticles :visible.sync="perviewShow" :preData="preData" />
-    <Video :visible.sync="videoShow" :videoSrc="videoSrc"/>
+    <Video :visible.sync="videoShow" :videoSrc="videoSrc" />
   </div>
 </template>
 
@@ -221,6 +225,9 @@ export default {
     editBtn(row) {
       this.addData = row;
       this.addVisible = true;
+      this.$refs.addDialog.formBase.title = row.title;
+      this.$refs.addDialog.formBase.articleBody = row.articleBody;
+      this.$refs.addDialog.formBase.videoURL = row.videoURL;
     },
     // 禁用按钮
     closeBtn(row) {
@@ -280,7 +287,7 @@ export default {
     },
     // 视频按钮
     showVideo({ videoURL }) {
-      this.videoSrc = videoURL
+      this.videoSrc = videoURL;
       this.videoShow = true;
     },
   },
