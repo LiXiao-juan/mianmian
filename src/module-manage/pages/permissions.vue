@@ -66,7 +66,7 @@
         :text="text"
         :pageTitle="pageTitle"
         :ruleInline="ruleInline"
-        :formBase="formBase"
+        :formBaseDate="formBase"
         :dialogFormVisible="dialogFormVisible"
         @handleCloseModal="handleCloseModal"
         @newDataes="getPermissions"

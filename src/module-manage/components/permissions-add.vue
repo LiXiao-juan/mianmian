@@ -53,10 +53,11 @@ export default {
       permissions: [],
       treeCheckedNodes: [],
       curPermissions: [],
+      formBase: this.formBaseDate,
     };
   },
   props: {
-    formBase: {
+    formBaseDate: {
       type: Object,
       default: {},
     },
@@ -135,12 +136,14 @@ export default {
   methods: {
     // 弹层显示
     dialogFormV() {
-      this.dialogFormVisible = true;
+      // this.dialogFormVisible = true;
+      this.$emit("update:dialogFormVisible", true);
     },
     // 弹层隐藏
     dialogFormH() {
       this.$emit("handleCloseModal");
-      this.dialogFormVisible = false;
+      // this.dialogFormVisible = false;
+      this.$emit("update:dialogFormVisible", false);
       this.handleResetForm();
     },
     // 退出
@@ -269,6 +272,11 @@ export default {
     },
   },
   // 挂载结束
+  watch: {
+    formBaseDate(val) {
+      this.formBase = val;
+    },
+  },
 
   mounted: function () {},
   // 创建完毕状态
