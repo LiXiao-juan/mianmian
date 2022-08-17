@@ -87,6 +87,7 @@ export default {
   data() {
     return {
       loading: false,
+
       formBase: {
         avatar: null,
         username: "",
@@ -164,14 +165,17 @@ export default {
             this.$emit("newDataes", this.formBase);
           });
         }
+      } catch (error) {
+      } finally {
         this.loading = false;
         this.onClose();
-      } catch (error) {}
+      }
     },
     // 关闭弹层
     onClose() {
       this.$emit("update:visible", false);
-      this.formBase = "";
+      this.$refs.dataForm.resetFields();
+      this.formBase.introduction = "";
     },
     //编辑数据回显
     async getUpdat(val, PermissionGroupsList) {
