@@ -54,8 +54,17 @@
         >
           <el-table-column type="index" label="序号" width="180">
           </el-table-column>
-          <el-table-column prop="title" label="文章标题" width="240">
+          <el-table-column label="文章标题" width="240">
+            <template slot-scope="{ row }">
+              {{ row.title }}
+              <i
+                class="el-icon-film video"
+                v-if="row.videoURL"
+                @click="showVideo(row)"
+              ></i>
+            </template>
           </el-table-column>
+
           <el-table-column prop="visits" label="阅读数" width="140">
           </el-table-column>
           <el-table-column prop="username" label="录入人"> </el-table-column>
@@ -74,10 +83,22 @@
           </el-table-column>
           <el-table-column label="操作">
             <template slot-scope="{ row }">
-              <el-button type="text" @click="delBtn(row)">预览</el-button>
-              <el-button type="text" @click="editBtn(row)">启用</el-button>
-              <el-button type="text" @click="editBtn(row)">修改</el-button>
-              <el-button type="text" @click="delBtn(row)">删除</el-button>
+              <el-button type="text" @click="preBtn(row)">预览</el-button>
+              <el-button type="text" @click="stateBtn(row)">{{
+                { 0: "禁用", 1: "启用" }[row.state]
+              }}</el-button>
+              <el-button
+                type="text"
+                @click="editBtn(row)"
+                :disabled="row.state == 0"
+                >修改</el-button
+              >
+              <el-button
+                type="text"
+                @click="delBtn(row)"
+                :disabled="row.state == 0"
+                >删除</el-button
+              >
             </template>
           </el-table-column>
         </el-table>
@@ -98,13 +119,18 @@
     </div>
     <!-- 新增弹框 -->
     <addArticles :visible.sync="addVisible" :formData="addData"></addArticles>
+    <!-- 预览弹框 -->
+    <PreviewArticles :visible.sync="perviewShow" :preData="preData" />
+    <Video :visible.sync="videoShow" :videoSrc="videoSrc"/>
   </div>
 </template>
 
 <script>
+import Video from "../components/articles-video.vue";
 import addArticles from "../components/articles-add.vue";
+import PreviewArticles from "../components/articles-preview.vue";
 import dayjs from "dayjs";
-import { list } from "@/api/hmmm/articles.js";
+import { list, remove, changeState } from "@/api/hmmm/articles.js";
 export default {
   name: "articles",
   data() {
@@ -119,17 +145,25 @@ export default {
         tags: null,
         state: null,
       },
+      perviewShow: false,
       addVisible: false,
+      videoShow: false,
       tableLoading: false,
       page: {
         page: 1,
         pagesize: 10,
       },
       addData: {},
+      // 预览文章信息对象
+      preData: {},
+      // 视频url
+      videoSrc: "",
     };
   },
   components: {
     addArticles,
+    PreviewArticles,
+    Video,
   },
 
   created() {
@@ -209,6 +243,17 @@ export default {
         });
       });
     },
+    // 状态按钮
+    async stateBtn({ id, state }) {
+      console.log(id, state);
+      await changeState({
+        id,
+        state: state == 1 ? 0 : 1,
+      });
+      this.$message.success("操作成功");
+      // 重新获取列表
+      this.getSkillList();
+    },
     // 删除按钮
     delBtn(row) {
       this.$confirm("此操作将永久删除用户 , 是否继续?", "提示", {
@@ -217,7 +262,7 @@ export default {
         type: "warning",
       }).then(async () => {
         // 删除请求
-        // await remove(row);
+        await remove(row);
         // 重新获取列表
         this.getSkillList();
         this.$message({
@@ -225,6 +270,18 @@ export default {
           message: "删除成功!",
         });
       });
+    },
+    // 预览按钮
+    preBtn(row) {
+      console.log(row);
+      row.createTime = dayjs(row.createTime).format("YYYY-MM-DD HH:mm:ss");
+      this.preData = row;
+      this.perviewShow = true;
+    },
+    // 视频按钮
+    showVideo({ videoURL }) {
+      this.videoSrc = videoURL
+      this.videoShow = true;
     },
   },
 };
@@ -261,5 +318,10 @@ export default {
   width: 100%;
   height: 36px;
   line-height: 36px;
+}
+.video {
+  color: #0000ff;
+  font-size: 18px;
+  cursor: pointer;
 }
 </style>

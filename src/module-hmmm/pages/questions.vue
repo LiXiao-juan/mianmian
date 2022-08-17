@@ -380,7 +380,7 @@ export default {
     this.getCityData();
     this.getQuestionList(this.page);
     this.getUserList();
-    this.$notify.success("author to 李佳琪");
+    this.$notify.success("author is 李佳琪");
   },
 
   methods: {
@@ -406,11 +406,8 @@ export default {
       const res = await tagSimple(this.subJectData);
       this.tagList = res.data;
       this.subJectData.tags = res.data[0] ? res.data[0].value : "";
-      console.log(res.data);
       // 判断若返回的数据有二级目录则渲染第一项--否则返回空
       this.subJectData.catalogID = data[0] ? data[0].value : "";
-      console.log(data);
-
     },
     // 获取城市下拉列表数据
     getCityData() {
@@ -488,19 +485,16 @@ export default {
         type: "warning",
       }).then(async () => {
         // 请求
-        await choiceAdd({
-          id: row.id,
-          choiceState: 0,
-        });
+        await remove(row);
         // 重新获取列表
-        this.getQuestionList();
+        this.getQuestionList(this.subJectData);
         this.$message({
           type: "success",
           message: "删除成功!",
         });
       });
     },
-    // 加入精选--------bug1判断条件
+    // 加入精选-------bug判断条件
     collectBtn(row) {
       console.log(row);
       this.$confirm("此操作将该题目加入精选, 是否继续?", "提示", {
@@ -514,7 +508,7 @@ export default {
           choiceState: 1,
         });
         // 重新获取列表
-        this.getQuestionList();
+        this.getQuestionList(this.subJectData);
         this.$message({
           type: "success",
           message: "收藏成功!",
