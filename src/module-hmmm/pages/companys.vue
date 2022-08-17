@@ -237,7 +237,7 @@ export default {
   created() {
     this.getCityData();
     this.getCompanysList();
-    this.$notify.success("author to 李佳琪");
+    this.$notify.success("author is 李佳琪");
   },
 
   methods: {
@@ -298,12 +298,18 @@ export default {
     },
     // 修改
     editBtn(row) {
-      row.isFamous = !!row.isFamous
+      row.isFamous = !!row.isFamous;
       this.addVisible = true;
       this.$refs.addCompany.editUpdate(row);
     },
     // 禁用按钮
     closeBtn(row) {
+      console.log(row);
+      const form = {
+        id: row.id,
+        state: row.state == 0 ? 1 : 0,
+      };
+      console.log(form);
       this.$confirm(
         `已成功${{ 1: "禁用", 0: "启用" }[row.state]}, 是否继续?`,
         "提示",
@@ -314,7 +320,7 @@ export default {
         }
       ).then(async () => {
         // 禁用请求
-        await disabled(row);
+        await disabled(form);
         // 重新获取列表
         this.getCompanysList();
         this.$message({
