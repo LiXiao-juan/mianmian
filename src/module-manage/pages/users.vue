@@ -93,6 +93,7 @@ export default {
 
   created() {
     this.getUserList();
+    this.$notify.success("author is 耿瑞杰");
   },
 
   methods: {
