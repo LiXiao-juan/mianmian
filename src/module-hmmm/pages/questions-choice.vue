@@ -269,7 +269,12 @@
           </el-table-column>
           <el-table-column fixed="right" label="操作" width="200">
             <template slot-scope="{ row }">
-              <el-button type="text" size="small">预览</el-button>
+              <el-button
+                type="text"
+                size="small"
+                @click="showTitleoverview(row.id)"
+                >预览</el-button
+              >
               <el-button type="text" size="small">审核</el-button>
               <el-button type="text" size="small">修改</el-button>
               <el-button type="text" size="small">上架</el-button>
@@ -293,14 +298,17 @@
           </el-pagination>
         </div>
       </el-card>
+      <!-- 题目预览 -->
+      <Titleoverview ref="dialog" :detailList="detailList" />
     </div>
   </div>
 </template>
 
 <script>
+import Titleoverview from "@/module-hmmm/components/Titleoverview.vue";
 import dayjs from "dayjs";
 import { simple } from "@/api/hmmm/subjects"; //学科
-import { choice, remove } from "@/api/hmmm/questions"; //精选题库列表等
+import { choice, remove, detail } from "@/api/hmmm/questions"; //精选题库列表等
 import { simple as directorySimple } from "@/api/hmmm/directorys"; //二级目录
 import { simple as tagSimple } from "@/api/hmmm/tags"; //标签
 import { simple as userSimple } from "@/api/base/users"; //录入人
@@ -311,6 +319,7 @@ export default {
   name: "questions",
   data() {
     return {
+      detailList: [], //预览详情
       activeName: "first", //tabs高亮
       subjectList: [], //科目列表
       tagList: [], //目录列表
@@ -354,7 +363,9 @@ export default {
       },
     };
   },
-  components: {},
+  components: {
+    Titleoverview,
+  },
 
   created() {
     this.getSubjectList();
@@ -464,7 +475,33 @@ export default {
     //tabs点击事件
     handleClick() {},
     //删除
-    onDelete(row) {},
+    onDelete(row) {
+      this.$confirm("此操作将永久删除该题目 , 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(async () => {
+        // 请求
+        await remove(row);
+        // 重新获取列表
+        this.getQuestionList(this.page);
+        this.$message({
+          type: "success",
+          message: "删除成功!",
+        });
+      });
+    },
+    // 题目预览
+    async showTitleoverview(id) {
+      try {
+        const res = await detail({ id });
+        console.log(res);
+        this.detailList = res.data;
+      } catch (error) {
+      } finally {
+        this.$refs.dialog.dialogVisible = true;
+      }
+    },
   },
 };
 </script>
