@@ -5,8 +5,8 @@
     @size-change="handleSizeChange"
     @current-change="handleCurrentChange"
     :current-page="currentPage"
-    :page-sizes="[20, 30, 50, 100]"
-    :page-size="20"
+    :page-sizes="paginationPagesizeArray"
+    :page-size="paginationPagesize"
     layout="prev, pager, next, sizes, jumper"
     :total="total"
   >
@@ -23,6 +23,14 @@ export default {
     params: {
       type: Object,
     },
+    paginationPagesizeArray: {
+      type: Array,
+      default: () => [20, 30, 50, 100],
+    },
+    paginationPagesize: {
+      type: Number,
+      default: 20,
+    },
   },
   data() {
     return {
@@ -36,12 +44,10 @@ export default {
     handleSizeChange(val) {
       this.params.pagesize = val;
       this.$emit("pager");
-      console.log(`每页 ${val} 条`);
     },
     handleCurrentChange(val) {
       this.params.page = val;
       this.$emit("pager");
-      console.log(`当前页: ${val}`);
     },
   },
 };
