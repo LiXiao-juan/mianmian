@@ -6,9 +6,13 @@
       width="400px"
       :before-close="onClose"
     >
-      <el-form :model="formData" :rules="rules" ref="form">        
+      <el-form :model="formData" :rules="rules" ref="form">
         <el-form-item label="所属学科" label-width="80px" prop="isFrontDisplay">
-          <el-select v-model="formData.subjectName" placeholder="请选择" style="width:100%" >
+          <el-select
+            v-model="formData.subjectID"
+            placeholder="请选择"
+            style="width: 100%"
+          >
             <el-option
               v-for="item in subjectNameList"
               :key="item.value"
@@ -41,7 +45,7 @@ export default {
       dialogTitle: "新增目录",
       formData: {
         directoryName: "",
-        subjectName: '',
+        subjectID: "",        
       },
       rules: {
         directoryName: [
@@ -55,10 +59,10 @@ export default {
       type: Boolean,
       required: true,
     },
-    subjectNameList:{
-      type:Array,
+    subjectNameList: {
+      type: Array,
       required: true,
-    }
+    },
   },
   methods: {
     // 关闭弹窗
@@ -66,8 +70,8 @@ export default {
       this.$emit("update:addDialog", false);
       this.$refs.form.resetFields();
       this.formData = {
-        subjectName: "",
-        isFrontDisplay: 1,
+        subjectID: "",
+        directoryName: "",
       };
       this.dialogTitle = "新增目录";
     },
@@ -94,13 +98,13 @@ export default {
         }
       }
     },
-    // 修改学科数据回显
-    editSubject(val) {
-      this.dialogTitle = "修改学科";
-      this.formData.id = val.id;
+    // 修改目录数据回显
+    editDirectory(val) {
+      this.dialogTitle = "修改目录";      
       // console.log(val);
-      this.formData.subjectName = val.subjectName;
-      this.formData.isFrontDisplay = val.isFrontDisplay;
+      this.formData.id = val.id
+      this.formData.subjectID = val.subjectID      
+      this.formData.directoryName = val.directoryName;
     },
   },
 };
