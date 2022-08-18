@@ -111,6 +111,7 @@ export default {
 
   created() {
     this.getPermissions();
+    this.$notify.success("author is 耿瑞杰");
   },
 
   methods: {
