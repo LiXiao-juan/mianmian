@@ -482,9 +482,9 @@ export default {
       try {
         const { data } = await detail(row);
         this.detailList = data;
-      } catch (error) {} //finally {
-        // this.$refs.dialog.dialogVisible = true;
-      // }
+      } catch (error) {} finally {
+         this.$refs.dialog.dialogVisible = true;
+       }
     },
     // 禁用按钮
     closeBtn(row) {},
