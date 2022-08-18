@@ -275,9 +275,13 @@
                 @click="showTitleoverview(row.id)"
                 >预览</el-button
               >
-              <el-button type="text" size="small">审核</el-button>
+              <el-button type="text" size="small" @click="oncheckout(row)"
+                >审核</el-button
+              >
               <el-button type="text" size="small">修改</el-button>
-              <el-button type="text" size="small">上架</el-button>
+              <el-button type="text" size="small" @click="onPublish(row)">{{
+                row.publishState === 0 ? "上架" : "下架"
+              }}</el-button>
               <el-button type="text" size="small" @click="onDelete(row)"
                 >删除</el-button
               >
@@ -300,6 +304,28 @@
       </el-card>
       <!-- 题目预览 -->
       <Titleoverview ref="dialog" :detailList="detailList" />
+      <!-- 题目审核对话框 -->
+      <el-dialog title="题目审核" :visible="showCheckout" width="30%">
+        <el-form>
+          <el-form-item>
+            <el-radio-group v-model="checkForm.chkState">
+              <el-radio :label="1">通过</el-radio>
+              <el-radio :label="2">拒绝</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item>
+            <el-input
+              type="textarea"
+              v-model="checkForm.chkRemarks"
+              placeholder="请输入审核意见"
+            ></el-input>
+          </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="showCheckout = false">取 消</el-button>
+          <el-button type="primary" @click="onSaveChk">确 定</el-button>
+        </span>
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -308,7 +334,7 @@
 import Titleoverview from "@/module-hmmm/components/Titleoverview.vue";
 import dayjs from "dayjs";
 import { simple } from "@/api/hmmm/subjects"; //学科
-import { choice, remove, detail } from "@/api/hmmm/questions"; //精选题库列表等
+import { choice, remove, detail, choiceCheck } from "@/api/hmmm/questions"; //精选题库列表等
 import { simple as directorySimple } from "@/api/hmmm/directorys"; //二级目录
 import { simple as tagSimple } from "@/api/hmmm/tags"; //标签
 import { simple as userSimple } from "@/api/base/users"; //录入人
@@ -361,6 +387,12 @@ export default {
         page: 1,
         pagesize: 5,
       },
+      showCheckout: false, //题目审核弹出控制
+      checkForm: {
+        id: "",
+        chkState: 1,
+        chkRemarks: "",
+      },
     };
   },
   components: {
@@ -386,7 +418,7 @@ export default {
       this.tableLoading = true;
       const { data } = await choice(obj);
       this.tableData = data;
-      // console.log(data);
+      console.log(data);
       this.tableList = data.items;
       console.log(data.items);
       this.tableLoading = false;
@@ -426,7 +458,7 @@ export default {
     },
     // 格式化审核状态
     chkStateFormatter(row, column, val) {
-      return { 0: "待审核", 1: "通过", 2: "拒绝" }[val];
+      return { 0: "待审核", 1: "已审核", 2: "已拒绝" }[val];
     },
     // 发布状态
     StateFormatter(row, column, val) {
@@ -434,6 +466,7 @@ export default {
     },
     // 搜索按钮
     async onSave() {
+      console.log(111);
       this.getQuestionList(this.subJectData);
     },
     // 获取录入人数据
@@ -473,9 +506,24 @@ export default {
       this.getQuestionList(this.subJectData);
     },
     //tabs点击事件
-    handleClick() {},
+    handleClick() {
+      if (this.activeName === "first") {
+        // 全部
+        this.getQuestionList(this.page);
+      } else if (this.activeName === "second") {
+        // 待审核
+        this.getQuestionList({ chkState: 0 });
+      } else if (this.activeName === "third") {
+        // 已审核
+        this.getQuestionList({ chkState: 1 });
+      } else if (this.activeName === "fourth") {
+        // 已拒绝
+        this.getQuestionList({ chkState: 2 });
+      }
+    },
     //删除
     onDelete(row) {
+      console.log(112);
       this.$confirm("此操作将永久删除该题目 , 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -501,6 +549,17 @@ export default {
       } finally {
         this.$refs.dialog.dialogVisible = true;
       }
+    },
+    // 审核
+    oncheckout(row) {
+      console.log(row);
+      // this.showCheckout = true;
+      // this.checkForm.id = row.id;
+    },
+    // // 审核确定按钮
+    onSaveChk() {},
+    onPublish() {
+      console.log(111);
     },
   },
 };
@@ -543,5 +602,9 @@ export default {
 }
 .move-col-right {
   margin-right: 20px;
+}
+.dialog-footer {
+  float: right;
+  margin-top: -30px;
 }
 </style>
