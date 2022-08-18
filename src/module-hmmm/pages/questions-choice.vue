@@ -279,7 +279,7 @@
                 type="text"
                 size="small"
                 @click="oncheckout(row)"
-                :disabled="!(row === 0)"
+                :disabled="!(row.chkState === 0)"
                 >审核</el-button
               >
               <el-button
