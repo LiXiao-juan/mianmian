@@ -275,10 +275,27 @@
                 @click="showTitleoverview(row.id)"
                 >预览</el-button
               >
-              <el-button type="text" size="small" @click="oncheckout(row)"
+              <el-button
+                type="text"
+                size="small"
+                @click="oncheckout(row)"
+                :disabled="!(row === 0)"
                 >审核</el-button
               >
-              <el-button type="text" size="small">修改</el-button>
+              <el-button
+                type="text"
+                size="small"
+                :disabled="row.publishState === 1"
+                @click="
+                  $router.push({
+                    path: '/questions/new',
+                    query: {
+                      id: row.id,
+                    },
+                  })
+                "
+                >修改</el-button
+              >
               <el-button type="text" size="small" @click="onPublish(row)">{{
                 row.publishState === 0 ? "上架" : "下架"
               }}</el-button>
@@ -305,7 +322,12 @@
       <!-- 题目预览 -->
       <Titleoverview ref="dialog" :detailList="detailList" />
       <!-- 题目审核对话框 -->
-      <el-dialog title="题目审核" :visible="showCheckout" width="30%">
+      <el-dialog
+        title="题目审核"
+        :visible="showCheckout"
+        width="30%"
+        @close="showCheckout = false"
+      >
         <el-form>
           <el-form-item>
             <el-radio-group v-model="checkForm.chkState">
@@ -334,7 +356,13 @@
 import Titleoverview from "@/module-hmmm/components/Titleoverview.vue";
 import dayjs from "dayjs";
 import { simple } from "@/api/hmmm/subjects"; //学科
-import { choice, remove, detail, choiceCheck } from "@/api/hmmm/questions"; //精选题库列表等
+import {
+  choice,
+  remove,
+  detail,
+  choiceCheck,
+  choicePublish,
+} from "@/api/hmmm/questions"; //精选题库列表等
 import { simple as directorySimple } from "@/api/hmmm/directorys"; //二级目录
 import { simple as tagSimple } from "@/api/hmmm/tags"; //标签
 import { simple as userSimple } from "@/api/base/users"; //录入人
@@ -494,6 +522,7 @@ export default {
         page: 1,
         pagesize: 5,
       };
+      this.getQuestionList(this.page);
     },
     // 点击分页
     async currentChange(num) {
@@ -523,7 +552,7 @@ export default {
     },
     //删除
     onDelete(row) {
-      console.log(112);
+      // console.log(112);
       this.$confirm("此操作将永久删除该题目 , 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -553,13 +582,47 @@ export default {
     // 审核
     oncheckout(row) {
       console.log(row);
-      // this.showCheckout = true;
-      // this.checkForm.id = row.id;
+      this.showCheckout = true;
+      this.checkForm.id = row.id;
     },
     // // 审核确定按钮
-    onSaveChk() {},
-    onPublish() {
-      console.log(111);
+    async onSaveChk() {
+      if (this.checkForm.chkRemarks === "") {
+        this.$message.warning("请输入审核意见");
+      } else {
+        await choiceCheck(this.checkForm);
+        this.$message.success("操作成功");
+        (this.checkForm = {
+          id: "",
+          chkState: 1,
+          chkRemarks: "",
+        }),
+          (this.showCheckout = false);
+        this.getQuestionList(this.page);
+      }
+    },
+    // 上架下架按钮
+    onPublish({ id, publishState }) {
+      this.$confirm(
+        `你确定${publishState === 0 ? "上架" : "下架"}这道题目吗?`,
+        "提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        }
+      ).then(async () => {
+        if (publishState === 0) {
+          await choicePublish({ id, publishState: 1 });
+        } else {
+          await choicePublish({ id, publishState: 0 });
+        }
+        this.getQuestionList(this.page);
+        this.$message({
+          type: "success",
+          message: `${publishState === 0 ? "上架" : "下架"}题目成功`,
+        });
+      });
     },
   },
 };
