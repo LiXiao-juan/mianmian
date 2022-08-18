@@ -314,13 +314,13 @@
         </div>
       </el-card>
       <!-- 题目预览 -->
-      <!-- <Titleoverview ref="dialog" :detailList="detailList" /> -->
+      <Titleoverview ref="dialog" :detailList="detailList" />
     </div>
   </div>
 </template>
 
 <script>
-// import Titleoverview from "@/module-hmmm/components/Titleoverview.vue";
+import Titleoverview from "@/module-hmmm/components/Titleoverview.vue";
 import dayjs from "dayjs";
 import { simple } from "@/api/hmmm/subjects";
 import { list, remove, choiceAdd, detail } from "@/api/hmmm/questions";
@@ -378,7 +378,7 @@ export default {
     };
   },
   components: {
-    // Titleoverview,
+    Titleoverview,
   },
 
   created() {
