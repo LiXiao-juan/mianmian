@@ -313,14 +313,17 @@
           </el-pagination>
         </div>
       </el-card>
+      <!-- 题目预览 -->
+      <!-- <Titleoverview ref="dialog" :detailList="detailList" /> -->
     </div>
   </div>
 </template>
 
 <script>
+// import Titleoverview from "@/module-hmmm/components/Titleoverview.vue";
 import dayjs from "dayjs";
 import { simple } from "@/api/hmmm/subjects";
-import { list, remove, choiceAdd } from "@/api/hmmm/questions";
+import { list, remove, choiceAdd, detail } from "@/api/hmmm/questions";
 import { simple as directorySimple } from "@/api/hmmm/directorys";
 import { simple as tagSimple } from "@/api/hmmm/tags";
 import { simple as userSimple } from "@/api/base/users";
@@ -331,6 +334,7 @@ export default {
   name: "questions",
   data() {
     return {
+      detailList: {}, //详情信息
       subjectList: [], //科目列表
       tagList: [], //目录列表
       userList: [], //人员列表
@@ -373,7 +377,9 @@ export default {
       },
     };
   },
-  components: {},
+  components: {
+    // Titleoverview,
+  },
 
   created() {
     this.getSubjectList();
@@ -472,8 +478,13 @@ export default {
       this.getQuestionList(this.subJectData);
     },
     // 修改
-    preview(row) {
-      console.log(row);
+    async preview(row) {
+      try {
+        const { data } = await detail(row);
+        this.detailList = data;
+      } catch (error) {} //finally {
+        // this.$refs.dialog.dialogVisible = true;
+      // }
     },
     // 禁用按钮
     closeBtn(row) {},
