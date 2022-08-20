@@ -93,7 +93,7 @@ export default {
       },
       // 表单对象
       formBase: {
-        isFamous: false,
+        isFamous: true,
         shortName: "",
         company: "",
         province: "",

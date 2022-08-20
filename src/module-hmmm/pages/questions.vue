@@ -263,7 +263,7 @@
                   type="success"
                   icon="el-icon-edit"
                   circle
-                  @click="editBtn(row)"
+                  @click="$router.push('/questions/new?id=' + row.id)"
                 ></el-button>
               </el-tooltip>
               <!-- 删除 -->
@@ -359,6 +359,7 @@ export default {
         user: "",
         remark: "",
         shortName: "",
+        city: null,
       },
       // 学科对象
       subJectData: {
@@ -456,6 +457,7 @@ export default {
         user: "",
         remark: "",
         shortName: "",
+        city: null,
       };
       this.subJectData = {
         subjectID: null,
@@ -465,7 +467,12 @@ export default {
         page: 1,
         pagesize: 5,
       };
-      this.getQuestionList(this.page);
+      // 清除二级目录以及标签数组--二级城市
+      this.citySelect.cityDate = [];
+      this.directoryList = [];
+      this.tagList = [];
+
+      this.getQuestionList(this.subJectData);
     },
     // 点击分页
     async currentChange(num) {
@@ -482,9 +489,10 @@ export default {
       try {
         const { data } = await detail(row);
         this.detailList = data;
-      } catch (error) {} finally {
-         this.$refs.dialog.dialogVisible = true;
-       }
+      } catch (error) {
+      } finally {
+        this.$refs.dialog.dialogVisible = true;
+      }
     },
     // 禁用按钮
     closeBtn(row) {},
@@ -497,6 +505,7 @@ export default {
       }).then(async () => {
         // 请求
         await remove(row);
+        this.subJectData.page = 1;
         // 重新获取列表
         this.getQuestionList(this.subJectData);
         this.$message({

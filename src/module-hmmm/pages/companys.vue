@@ -105,7 +105,7 @@
           </el-table-column>
           <el-table-column prop="shortName" label="企业简称"> </el-table-column>
           <el-table-column prop="tags" label="标签"> </el-table-column>
-          <el-table-column prop="creatorID" label="创建者"> </el-table-column>
+          <el-table-column prop="username" label="创建者"> </el-table-column>
           <el-table-column
             prop="addDate"
             label="创建日期"
@@ -245,6 +245,7 @@ export default {
     async getCompanysList(obj) {
       this.tableLoading = true;
       const { data } = await list(obj);
+      console.log(data);
       this.tableData = data;
       this.tableList = data.items;
       this.tableLoading = false;
@@ -285,6 +286,7 @@ export default {
         shortName: null,
         state: null,
       };
+      this.citySelect.cityDate = [];
     },
     // 点击分页
     async currentChange(num) {
@@ -338,8 +340,8 @@ export default {
       }).then(async () => {
         // 删除请求
         await remove(row);
-        // 重新获取列表
-        this.getCompanysList();
+        this.$set( this.formData, 'page', 1 )
+        this.getCompanysList()
         this.$message({
           type: "success",
           message: "删除成功!",
