@@ -610,6 +610,7 @@ export default {
         this.$refs.editorSecond.deleteText();
         //清除规则
         this.$refs.form.resetFields();
+        this.$router.go(-1);
       } catch (error) {}
     },
     async update() {
