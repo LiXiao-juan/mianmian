@@ -39,7 +39,7 @@
       >
       <!-- 头部提示区 -->
       <!-- 主体内容 -->
-      <el-table :data="subjectData.items" style="width: 100%">
+      <el-table :data="subjectData.items" highlight-current-row style="width: 100%">
         <el-table-column type="index" label="序号" width="48">
         </el-table-column>
         <el-table-column prop="subjectName" label="学科名称" width="144">
@@ -198,6 +198,12 @@ export default {
         this.params.id = val.id
         await remove(this.params);
         this.$message.success("删除成功");
+        let totalPage = Math.ceil(
+          (this.subjectData.counts - 1) / this.params.pagesize
+        ); // 总页数
+        let currentPage =
+          this.params.page > totalPage ? totalPage : this.params.page;
+        this.params.page = currentPage < 1 ? 1 : currentPage;
         this.getSubjectList();
       } catch (error) {
         this.$message.error(error);

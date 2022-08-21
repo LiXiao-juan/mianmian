@@ -65,7 +65,11 @@
       >
       <!-- 头部提示区 -->
       <!-- 主体内容 -->
-      <el-table :data="directoryData.items" style="width: 100%">
+      <el-table
+        :data="directoryData.items"
+        highlight-current-row
+        style="width: 100%"
+      >
         <el-table-column type="index" label="序号" width="80">
         </el-table-column>
         <el-table-column prop="subjectName" label="所属学科" width="177">
@@ -120,7 +124,7 @@
         background
         :page-sizes="[5, 10, 20, 50]"
         layout=" prev, pager, next, sizes,jumper"
-        :total="directoryData.counts"
+        :total="countInfo"
         style="margin-top: 20px; text-align: right"
       >
       </el-pagination>
@@ -152,6 +156,7 @@ export default {
       },
       directoryData: {}, //学科列表整个数据，包括数量，页码等
       subjectNameList: [],
+      countInfo:0,
       params: {
         page: 1,
         pagesize: 10,
@@ -187,11 +192,13 @@ export default {
       if (this.$route.query.id) {
         this.params.subjectID = this.$route.query.id;
         const data = await list(this.params);
+        this.countInfo = data.data.counts
         // console.log(data.data);
         this.directoryData = data.data;
       } else {
         const data = await list(this.params);
-        // console.log(data.data);
+        console.log(data.data);
+        this.countInfo = data.data.counts
         this.directoryData = data.data;
       }
     },
@@ -228,8 +235,14 @@ export default {
           type: "warning",
         });
         this.params.id = val.id;
-        await remove(this.params);
+        await remove(this.params);        
         this.$message.success("删除成功");
+        let totalPage = Math.ceil(
+          (this.countInfo - 1) / this.params.pagesize
+        ); // 总页数
+        let currentPage =
+          this.params.page > totalPage ? totalPage : this.params.page;
+        this.params.page = currentPage < 1 ? 1 : currentPage;
         this.getDirectorysList();
       } catch (error) {
         this.$message.error(error);

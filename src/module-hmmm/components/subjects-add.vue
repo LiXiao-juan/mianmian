@@ -4,7 +4,7 @@
       :title="dialogTitle"
       :visible="addDialog"
       width="400px"
-      :before-close="onClose"
+      @close="onClose"
     >
       <el-form :model="formData" :rules="rules" ref="form">
         <el-form-item label="学科名称" label-width="80px" prop="subjectName">
