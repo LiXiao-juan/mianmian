@@ -119,6 +119,7 @@ export default {
       try {
         const res = await randoms(this.params);
         this.tableData = res.data;
+        console.log(this.tableData);
       } catch (error) {
         console.log(error);
       }
@@ -139,6 +140,10 @@ export default {
           type: "warning",
         });
         await removeRandoms(row);
+        const page = this.tableData.counts;
+        if (this.params.page > 1 && page % this.params.pagesize == 1) {
+          this.params.page = this.params.page - 1;
+        }
         this.getRandomsList();
         this.$message.success("删除成功");
       } catch (error) {

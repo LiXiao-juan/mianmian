@@ -34,6 +34,14 @@
           </el-col>
           <el-col :span="6" style="text-align: right">
             <el-button
+              type="text"
+              icon="el-icon-back"
+              size="small"
+              v-if="$route.query.id"
+              @click="$router.go(-1)"
+              >返回学科</el-button
+            >
+            <el-button
               size="small"
               type="success"
               icon="el-icon-edit"
@@ -161,15 +169,22 @@ export default {
       paginationPagesizeArray: [5, 10, 20, 50],
       dialogFormVisible: false,
       simpleSubjects: [],
+      queryId: "",
     };
   },
   created() {
     this.getTagsList();
+    if (this.$route.query.id) {
+      this.getTagsList();
+    }
   },
   methods: {
     /* 获取标签列表 */
     async getTagsList() {
       try {
+        if (this.$route.query.id) {
+          this.form.subjectID = this.$route.query.id;
+        }
         const { data } = await list(this.form);
         this.tableData = data;
       } catch (error) {
@@ -249,8 +264,11 @@ export default {
         cancelButtonText: "取消",
         type: "warning",
       });
-      console.log(row);
       await remove(row);
+      const page = this.tableData.counts;
+      if (this.form.page > 1 && page % this.form.pagesize == 1) {
+        this.form.page = this.form.page - 1;
+      }
       this.$message.success("删除成功");
       await this.getTagsList();
     },

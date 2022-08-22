@@ -401,7 +401,9 @@ export default {
           if (err || data.statusCode != 200) {
             return this.$message.error("上传失败，请重试");
           }
+
           this.form.options[this.imgIndex].img = "http://" + data.Location;
+          console.log("up", this.form.options[this.imgIndex].img);
           this.imgFlag = true;
         }
       );

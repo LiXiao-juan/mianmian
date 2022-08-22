@@ -25,6 +25,8 @@ import { quillEditor } from "vue-quill-editor";
 import "quill/dist/quill.core.css";
 import "quill/dist/quill.snow.css";
 import "quill/dist/quill.bubble.css";
+import "highlight.js/styles/monokai-sublime.css"; // 代码高亮样式
+import hljs from "highlight.js";
 import COS from "cos-js-sdk-v5";
 const cos = new COS({
   SecretId: "AKIDl03tVt3ygAPO8dsseARTGo69xWqujJel",
@@ -60,6 +62,11 @@ export default {
                   this.$refs.myQuillEditor.quill.format("image", false);
                 }
               },
+            },
+          },
+          syntax: {
+            highlight: (text) => {
+              return hljs.highlightAuto(text).value; // 这里就是代码高亮需要配置的地方
             },
           },
         },
