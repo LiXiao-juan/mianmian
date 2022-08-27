@@ -91,7 +91,7 @@ export default {
     async changeTags() {
       try {
         await this.$refs.form.validate();
-        if (this.title === "新增目录") {
+        if (this.title === "新增标签") {
           this.$emit("addTags");
         } else {
           this.$emit("updateTags");

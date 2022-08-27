@@ -134,7 +134,7 @@
           :simpleSubjects="simpleSubjects"
           @addTags="addTags"
           @updateTags="updateTags"
-          title="修改目录"
+          :title="title"
         />
       </el-card>
     </div>
@@ -170,6 +170,7 @@ export default {
       dialogFormVisible: false,
       simpleSubjects: [],
       queryId: "",
+      title: "",
     };
   },
   created() {
@@ -217,6 +218,7 @@ export default {
     },
     /* 显示弹层并获取简单学科列表 */
     async showDialog() {
+      this.title = "新增标签";
       try {
         const res = await simple();
         this.simpleSubjects = res.data;
@@ -240,6 +242,7 @@ export default {
     async detailTags(row) {
       try {
         await this.showDialog();
+        this.title = "修改标签";
         this.$refs.tagsDialog.form = {
           subjectID: row.subjectID,
           tagName: row.tagName,
