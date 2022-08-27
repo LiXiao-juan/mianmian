@@ -501,7 +501,7 @@ export default {
     },
     //切换回单选时恢复默认选项
     defaultQusetion() {
-      if (this.form.questionType === 1) {
+      if (this.form.questionType !== 2) {
         this.form.options = [
           {
             code: "A", //选项
