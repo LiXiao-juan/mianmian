@@ -19,10 +19,10 @@
             class="choose-type"
             @change="handleChooseType"
           >
-            <el-radio label="menu" class="choose-item" :disabled="typeStatus"
+            <el-radio label="menu" class="choose-item" :disabled="treeStructure"
               >菜单</el-radio
             >
-            <el-radio label="points" class="choose-item" :disabled="typeStatus"
+            <el-radio label="points" class="choose-item" :disabled="treeStructure"
               >权限点</el-radio
             >
           </el-radio-group>

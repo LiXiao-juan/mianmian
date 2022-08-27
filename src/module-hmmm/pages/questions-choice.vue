@@ -432,7 +432,7 @@ export default {
     this.getCityData();
     this.getQuestionList(this.page);
     this.getUserList();
-    this.$notify.success("author to 耿瑞杰");
+    this.$notify.success("author is 耿瑞杰");
   },
 
   methods: {

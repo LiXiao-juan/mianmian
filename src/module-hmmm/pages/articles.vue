@@ -23,7 +23,7 @@
                 </el-select>
               </div>
             </el-col>
-            <el-col :span="12" style="margin-left: 20px">
+            <el-col :span="11" style="margin-left: 20px">
               <div>
                 <el-button size="small" @click="onClear"> 清除 </el-button>
                 <el-button size="small" type="primary" @click="onSave">
@@ -172,7 +172,7 @@ export default {
 
   created() {
     this.getSkillList(this.page);
-    this.$notify.success("author to 李佳琪");
+    this.$notify.success("author is 李佳琪");
   },
 
   methods: {
@@ -270,6 +270,13 @@ export default {
       }).then(async () => {
         // 删除请求
         await remove(row);
+        const page = this.tableData.counts;
+        if (
+          this.subJectData.page > 1 &&
+          page % this.subJectData.pagesize == 1
+        ) {
+          this.subJectData.page = this.subJectData.page - 1;
+        }
         // 重新获取列表
         this.getSkillList();
         this.$message({

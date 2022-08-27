@@ -505,7 +505,11 @@ export default {
       }).then(async () => {
         // 请求
         await remove(row);
-        this.subJectData.page = 1;
+        const page = this.tableData.counts
+        if(this.subJectData.page > 1 && page % this.subJectData.pagesize == 1){
+          this.subJectData.page = this.subJectData.page - 1
+        }
+        // this.subJectData.page = 1;
         // 重新获取列表
         this.getQuestionList(this.subJectData);
         this.$message({
