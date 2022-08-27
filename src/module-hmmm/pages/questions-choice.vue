@@ -560,8 +560,15 @@ export default {
       }).then(async () => {
         // 请求
         await remove(row);
+        const page = this.tableData.counts;
+        if (
+          this.subJectData.page > 1 &&
+          page % this.subJectData.pagesize == 1
+        ) {
+          this.subJectData.page = this.subJectData.page - 1;
+        }
         // 重新获取列表
-        this.getQuestionList(this.page);
+        this.getQuestionList(this.subJectData);
         this.$message({
           type: "success",
           message: "删除成功!",

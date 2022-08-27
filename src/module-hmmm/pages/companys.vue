@@ -340,8 +340,11 @@ export default {
       }).then(async () => {
         // 删除请求
         await remove(row);
-        this.$set( this.formData, 'page', 1 )
-        this.getCompanysList()
+        const page = this.tableData.counts;
+        if (this.formData.page > 1 && page % this.formData.pagesize == 1) {
+          this.formData.page = this.formData.page - 1;
+        }
+        this.getCompanysList(this.formData);
         this.$message({
           type: "success",
           message: "删除成功!",

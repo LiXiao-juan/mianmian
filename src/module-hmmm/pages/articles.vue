@@ -271,14 +271,11 @@ export default {
         // 删除请求
         await remove(row);
         const page = this.tableData.counts;
-        if (
-          this.subJectData.page > 1 &&
-          page % this.subJectData.pagesize == 1
-        ) {
-          this.subJectData.page = this.subJectData.page - 1;
+        if (this.formData.page > 1 && page % this.formData.pagesize == 1) {
+          this.formData.page = this.formData.page - 1;
         }
         // 重新获取列表
-        this.getSkillList();
+        this.getSkillList(this.formData);
         this.$message({
           type: "success",
           message: "删除成功!",
